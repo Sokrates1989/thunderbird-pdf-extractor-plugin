@@ -1,0 +1,1 @@
+# thunderbird-pdf-extractor-plugin
