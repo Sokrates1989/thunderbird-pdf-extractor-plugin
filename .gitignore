@@ -1,0 +1,14 @@
+extension/dist/
+extension/node_modules/
+native-host/.mypy_cache/
+native-host/.pytest_cache/
+native-host/.pytest-temp*/
+native-host/tmp/
+native-host/.ruff_cache/
+native-host/.venv/
+native-host/build/
+native-host/dist/
+native-host/*.egg-info/
+artifacts/
+*.pyc
+__pycache__/

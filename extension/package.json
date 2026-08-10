@@ -1,0 +1,28 @@
+{
+  "name": "thunderbird-pdf-extractor-extension",
+  "version": "0.2.1",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "clean": "node scripts/build.mjs --clean",
+    "lint": "eslint .",
+    "package": "npm run build && node scripts/package.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/archiver": "8.0.0",
+    "@types/node": "20.19.43",
+    "archiver": "8.0.0",
+    "esbuild": "0.28.2",
+    "eslint": "9.39.5",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.55.0",
+    "vitest": "4.1.10"
+  }
+}

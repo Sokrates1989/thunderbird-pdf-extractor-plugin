@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "thunderbird-pdf-archiver-host"
+version = "0.2.1"
+description = "Local Native Messaging companion for searchable Thunderbird email and attachment PDFs."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "MIT" }
+dependencies = [
+  "pillow==12.3.0",
+  "pypdf==6.15.0",
+  "reportlab==5.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy==2.3.0",
+  "pip-tools==7.6.0",
+  "pyinstaller==6.22.0",
+  "pytest==9.1.1",
+  "ruff==0.16.2"
+]
+
+[project.scripts]
+thunderbird-pdf-archiver-host = "paperless_mail_archiver.host:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["paperless_mail_archiver*"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-config --strict-markers -p no:cacheprovider --basetemp=.pytest-temp"
+testpaths = ["tests"]
+markers = [
+  "chromium: uses an installed local Chromium browser to verify rendering isolation"
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "PERF", "RUF", "S", "SIM", "UP"]
+ignore = [
+  "COM812",
+  "D203",
+  "D213",
+  "E501"
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["reportlab.*"]
+ignore_missing_imports = true

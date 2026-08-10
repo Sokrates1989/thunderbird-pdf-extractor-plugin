@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-i18n="actionTitle"></title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <header class="page-header">
+        <h1 data-i18n="actionTitle"></h1>
+        <button id="open-options" class="icon-button" type="button" data-i18n-aria-label="openSettings">⚙</button>
+      </header>
+
+      <section id="loading-panel" class="panel" aria-live="polite">
+        <p data-i18n="loadingMessage"></p>
+      </section>
+
+      <section id="review-panel" class="panel hidden">
+        <dl class="metadata">
+          <dt data-i18n="senderLabel"></dt>
+          <dd id="sender-value"></dd>
+          <dt data-i18n="subjectLabel"></dt>
+          <dd id="subject-value"></dd>
+          <dt data-i18n="dateLabel"></dt>
+          <dd id="date-value"></dd>
+        </dl>
+
+        <label class="field">
+          <span data-i18n="titleLabel"></span>
+          <input id="title-input" type="text" maxlength="300">
+        </label>
+        <div class="field">
+          <span data-i18n="fileNameLabel"></span>
+          <output id="filename-value"></output>
+        </div>
+        <div class="field">
+          <span data-i18n="outputDirectoryLabel"></span>
+          <div class="directory-controls">
+            <output id="directory-value"></output>
+            <button id="select-directory" class="secondary" type="button" data-i18n="selectDirectoryButton"></button>
+          </div>
+        </div>
+
+        <label class="checkbox-row">
+          <input id="include-body" type="checkbox" checked>
+          <span data-i18n="includeBodyLabel"></span>
+        </label>
+
+        <label class="field">
+          <span data-i18n="imageModeLabel"></span>
+          <select id="image-mode">
+            <option value="placeholder" data-i18n="imageModePlaceholder"></option>
+            <option value="embed" data-i18n="imageModeEmbed"></option>
+          </select>
+        </label>
+        <p class="scope-note" data-i18n="imageModeHint"></p>
+        <label class="checkbox-row">
+          <input id="separator-pages" type="checkbox">
+          <span data-i18n="separatorPagesLabel"></span>
+        </label>
+        <p class="scope-note" data-i18n="separatorPagesHint"></p>
+        <p id="review-status" class="scope-note" aria-live="polite"></p>
+
+        <h2 data-i18n="attachmentsHeading"></h2>
+        <p id="attachment-scope-note" class="scope-note" data-i18n="attachmentsSliceTwoNote"></p>
+        <ul id="attachment-list" class="attachment-list"></ul>
+      </section>
+
+      <section id="progress-panel" class="panel hidden" aria-live="polite">
+        <p id="progress-label"></p>
+        <progress id="progress-bar" value="0" max="1"></progress>
+      </section>
+
+      <section id="result-panel" class="panel hidden" aria-live="polite">
+        <h2 id="result-heading"></h2>
+        <p id="result-summary"></p>
+        <p id="result-path" class="path"></p>
+        <div id="result-attachments" class="result-attachments"></div>
+        <details id="error-details" class="hidden">
+          <summary data-i18n="technicalDetails"></summary>
+          <pre id="error-detail-text"></pre>
+        </details>
+      </section>
+
+      <footer class="actions">
+        <button id="cancel-button" class="secondary" type="button" data-i18n="cancelButton"></button>
+        <button id="open-directory" class="secondary hidden" type="button" data-i18n="openDirectoryButton"></button>
+        <button id="archive-button" class="primary" type="button" disabled data-i18n="archiveButton"></button>
+      </footer>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-i18n="settingsTitle"></title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <main>
+      <h1 data-i18n="settingsTitle"></h1>
+      <p data-i18n="settingsIntroduction"></p>
+      <label>
+        <span data-i18n="outputDirectoryLabel"></span>
+        <span class="directory-controls">
+          <input id="output-directory" type="text" data-i18n-placeholder="outputDirectoryPlaceholder" spellcheck="false">
+          <button id="browse-button" type="button" data-i18n="selectDirectoryButton"></button>
+        </span>
+      </label>
+      <p class="hint" data-i18n="outputDirectoryHint"></p>
+      <label>
+        <span data-i18n="imageModeLabel"></span>
+        <select id="image-mode">
+          <option value="placeholder" data-i18n="imageModePlaceholder"></option>
+          <option value="embed" data-i18n="imageModeEmbed"></option>
+        </select>
+      </label>
+      <p class="hint" data-i18n="imageModeHint"></p>
+      <label class="checkbox-row">
+        <input id="separator-pages" type="checkbox">
+        <span data-i18n="separatorPagesLabel"></span>
+      </label>
+      <p class="hint" data-i18n="separatorPagesHint"></p>
+      <div class="actions">
+        <button id="test-button" type="button" data-i18n="testConnectionButton"></button>
+        <button id="save-button" class="primary" type="button" data-i18n="saveButton"></button>
+      </div>
+      <p id="status" aria-live="polite"></p>
+      <section>
+        <h2 data-i18n="sliceTwoScopeHeading"></h2>
+        <p data-i18n="sliceTwoScopeDescription"></p>
+      </section>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>
