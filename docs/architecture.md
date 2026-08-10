@@ -46,7 +46,8 @@ unselected item remains named in the email section and final result.
 attachments in MIME order. A nested EML section contains its recursively
 converted children. pypdf appends source pages without rasterizing PDFs,
 preserves each page's geometry, creates matching outlines, removes active page
-annotations/actions, and writes normalized document metadata. Separator pages
+actions and non-URI annotations, normalizes safe external link annotations, and
+writes normalized document metadata. Separator pages
 are an optional persisted setting and default to off.
 
 ## Compatibility choices

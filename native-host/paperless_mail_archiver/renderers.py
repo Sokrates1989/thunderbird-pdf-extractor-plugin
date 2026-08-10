@@ -118,12 +118,11 @@ h1 {{ font-size: 18pt; line-height: 1.2; margin: 0 0 7mm; }}
 h2 {{ border-bottom: 1px solid #bbb; font-size: 12pt; margin-top: 8mm; padding-bottom: 2mm; }}
 dl {{ display: grid; grid-template-columns: max-content 1fr; gap: 1mm 4mm; margin: 0; }}
 dt {{ color: #555; font-weight: bold; }} dd {{ margin: 0; }}
-a::after {{ color: #555; content: " (" attr(href) ")"; font-size: 9pt; }}
-a.image-link::after {{ content: none; }}
 table {{ border-collapse: collapse; max-width: 100%; }} td, th {{ border: 1px solid #bbb; padding: 2mm; }}
 .plain {{ white-space: normal; }} .muted, li span {{ color: #666; font-size: 9pt; }}
 img {{ display: block; height: auto; margin: 2mm auto; max-width: 100%; page-break-inside: avoid; }}
 .image-placeholder {{ background: #f2f2f2; border: 1px solid #ccc; color: #666; display: inline-block; font-size: 9pt; margin: 1mm 0; padding: 1.5mm 2mm; }}
+a.image-link .image-placeholder {{ color: #0645ad; text-decoration: underline; }}
 </style></head><body>
 <h1>{html.escape(document.subject)}</h1><dl>{metadata}</dl>
 <h2>Email</h2><section>{body}</section>

@@ -29,6 +29,10 @@ ZIP/Archive und unbekannte Formate werden nicht entpackt, sondern sichtbar
 ausgelassen. Optionale Trennseiten sind standardmäßig aus. PDF-Lesezeichen
 werden immer für die E-Mail und jeden enthaltenen Anhang angelegt.
 
+Nicht eingebettete Bilder bleiben als klickbare Platzhalter erhalten, wenn eine
+sichere Webadresse oder ein umschließender Weblink vorhanden ist. Lesbare
+Linktexte bleiben erhalten, ohne lange Tracking-Adressen daneben auszudrucken.
+
 ## Bauen und installieren
 
 ```powershell
@@ -36,13 +40,13 @@ werden immer für die E-Mail und jeden enthaltenen Anhang angelegt.
 .\installer\windows\install.ps1
 ```
 
-Danach `artifacts\thunderbird-pdf-archiver-0.2.1.xpi` über Thunderbird → Add-ons
+Danach `artifacts\thunderbird-pdf-archiver-0.2.2.xpi` über Thunderbird → Add-ons
 und Themes → Erweiterungen → Add-on aus Datei installieren einspielen.
 Thunderbird neu starten, in den Einstellungen einen vorhandenen Zielordner über
 **Durchsuchen …** auswählen und den lokalen Begleiter testen.
 
 Die Installation erfolgt ohne Administratorrechte unter
-`%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.2.1`. LibreOffice ist nur für die
+`%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.2.2`. LibreOffice ist nur für die
 Office-/ODF-Konvertierung erforderlich. Zum Entfernen zuerst die Erweiterung in
 Thunderbird löschen und anschließend ausführen:
 

@@ -52,6 +52,24 @@ def test_safe_html_discloses_but_does_not_embed_attachment() -> None:
     assert "cid:pixel@example.test" not in rendered
 
 
+def test_safe_html_prints_link_labels_without_appending_raw_urls() -> None:
+    """Long tracking destinations stay interactive without expanding the printed layout."""
+    document = parse_email(plain_email_bytes())
+    document = replace(
+        document,
+        body=(
+            '<a href="https://click.example.test/very/long/tracking/destination">'
+            "Geschnetzeltes Züricher Art mit Spätzle</a>"
+        ),
+        body_kind="html",
+    )
+
+    rendered = build_safe_html(document, include_body=True)
+
+    assert "Geschnetzeltes Züricher Art mit Spätzle</a>" in rendered
+    assert "attr(href)" not in rendered
+
+
 def test_safe_html_embeds_verified_cid_image_as_data() -> None:
     """Embed mode resolves a CID image locally while preserving the data-only CSP."""
     document = parse_email(attachment_email_bytes())

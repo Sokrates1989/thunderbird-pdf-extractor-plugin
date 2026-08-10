@@ -32,7 +32,9 @@ children.
 
 Email-body images retain the privacy-first option introduced in Slice 1:
 placeholders are the default, or the user may explicitly request bounded
-embedding with per-image placeholder fallback.
+embedding with per-image placeholder fallback. A placeholder backed by a safe
+web source or enclosing web link remains clickable. Readable link labels are
+preserved without printing long tracking destinations beside them.
 
 ## Prerequisites
 
@@ -51,12 +53,12 @@ From PowerShell at the repository root:
 .\installer\windows\install.ps1
 ```
 
-Then install `artifacts\thunderbird-pdf-archiver-0.2.1.xpi` in Thunderbird via
+Then install `artifacts\thunderbird-pdf-archiver-0.2.2.xpi` in Thunderbird via
 Add-ons and Themes → Extensions → Install Add-on From File. Restart Thunderbird,
 open the extension settings, select an existing folder with **Browse**, and run
 **Test companion** before the first archive.
 
-The installer writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.2.1` and
+The installer writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.2.2` and
 registers the native host under the current user at
 `HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archiver`.
 Administrator privileges are not required.

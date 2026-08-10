@@ -88,7 +88,7 @@ try {
         Pop-Location
     }
 
-    Write-Host "XPI: $(Join-Path $artifactRoot 'thunderbird-pdf-archiver-0.2.1.xpi')"
+    Write-Host "XPI: $(Join-Path $artifactRoot 'thunderbird-pdf-archiver-0.2.2.xpi')"
     Write-Host "Native host: $(Join-Path $nativeArtifactRoot 'thunderbird-pdf-archiver-host.exe')"
 }
 catch {

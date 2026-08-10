@@ -29,10 +29,10 @@ def _hello(component_version: str) -> dict[str, object]:
 
 def test_matching_component_handshake_is_compatible() -> None:
     """The released extension and host versions explicitly agree."""
-    response = _hello("0.2.1")
+    response = _hello("0.2.2")
 
     assert response["compatible"] is True
-    assert response["hostVersion"] == "0.2.1"
+    assert response["hostVersion"] == "0.2.2"
 
 
 def test_different_component_handshake_is_incompatible() -> None:

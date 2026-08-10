@@ -12,7 +12,7 @@ HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archi
 The manifest `path` must point to `thunderbird-pdf-archiver-host.exe`, and
 `allowed_extensions` must contain
 `thunderbird-pdf-archiver@sokrates1989.de`. Extension and host must both be
-version `0.2.1`; an older Slice 1 companion is intentionally incompatible.
+version `0.2.2`; an older companion is intentionally incompatible.
 
 ## Output directory error
 
@@ -27,6 +27,17 @@ MIME/data and bounded public HTTPS raster images are eligible. HTTP,
 private-network, SVG, oversized, unavailable, and invalid sources stay as
 placeholders. ReportLab fallback is text-normalized and also uses placeholders.
 External embedding can reveal your public IP; placeholder mode avoids requests.
+When a public HTTPS image cannot be embedded, its placeholder links to the
+image source unless the image was already wrapped by a safe link, in which case
+that existing destination is retained. The PDF viewer controls whether it shows
+or requires confirmation for an external destination; the PDF itself cannot
+enforce one consistent confirmation dialog across viewers.
+
+The original email must actually contain image data or reachable image URLs.
+Many newsletters contain only remote URLs, so there is nothing to extract from
+the EML itself. The companion requests only formats it can verify (PNG, GIF,
+JPEG, and WebP), applies strict size/time/network limits, and falls back per
+image when a host is unavailable or rejects the request.
 
 ## Browser rendering falls back
 

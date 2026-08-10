@@ -3,9 +3,11 @@
 from collections.abc import Sequence
 from pathlib import Path
 from threading import Event
+from typing import cast
 
 import pytest
 from pypdf import PdfReader
+from pypdf.generic import ArrayObject, DictionaryObject
 
 from paperless_mail_archiver.archive_service import ArchiveService
 from paperless_mail_archiver.errors import HostError
@@ -118,7 +120,15 @@ def test_archive_merges_selected_attachments_in_mime_order(tmp_path: Path) -> No
     assert "alpha,beta" in extracted_pages[3]
     assert float(reader.pages[1].mediabox.width) == pytest.approx(792)
     assert float(reader.pages[1].mediabox.height) == pytest.approx(612)
-    assert "/Annots" not in reader.pages[1]
+    annotations = cast(ArrayObject, reader.pages[1]["/Annots"])
+    assert len(annotations) == 1
+    link = cast(DictionaryObject, annotations[0].get_object())
+    assert set(link) == {"/Type", "/Subtype", "/Rect", "/Border", "/Contents", "/A"}
+    assert str(link["/Subtype"]) == "/Link"
+    action = cast(DictionaryObject, link["/A"])
+    assert str(action["/S"]) == "/URI"
+    assert str(action["/URI"]) == "https://example.test/active-link"
+    assert str(link["/Contents"]) == "https://example.test/active-link"
     outline_titles = [item.title for item in reader.outline if not isinstance(item, list)]
     assert outline_titles == ["E-Mail", "01-original.pdf", "02-scan.png", "03-data.csv"]
     assert reader.metadata is not None

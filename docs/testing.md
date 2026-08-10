@@ -19,7 +19,8 @@ Set-Location ..\native-host
 ```
 
 The native suite verifies ordered PDF/image/CSV merging, source PDF text and
-page geometry, active-annotation removal, metadata, outlines, nested EML
+page geometry, safe URI-link normalization, active-action removal, metadata,
+outlines, nested EML
 children, encrypted-PDF failure, unsupported ZIP disclosure, MIME traversal,
 cleanup, and protocol validation. When Chromium exists, a local HTTP canary
 proves remote email images are not requested while a CID fixture proves verified
@@ -33,7 +34,7 @@ replace a real Thunderbird run.
 
 Test separately on Thunderbird 128 ESR, the current ESR, and current release:
 
-1. Build/install both `0.2.1` artifacts and restart Thunderbird.
+1. Build/install both `0.2.2` artifacts and restart Thunderbird.
 2. Choose a new empty folder with **Durchsuchen …** and test the companion.
 3. Open one email containing, in a known order: PDF, PNG/JPEG/WebP/BMP/TIFF,
    TXT, CSV, HTML, nested EML, ZIP, and an inline signature/logo.
@@ -50,17 +51,21 @@ Test separately on Thunderbird 128 ESR, the current ESR, and current release:
    nested child filenames must navigate to the correct starting pages.
 8. Confirm the success view shows page count, included/skipped counts and names,
    output path, and **Zielordner öffnen**.
-9. Enable separator pages, repeat, and verify one separator before every
+9. In an HTML newsletter, confirm readable link labels are clickable without a
+   printed tracking URL. With placeholder mode selected, confirm a web-backed
+   image placeholder is clickable and the viewer exposes the real destination
+   before or during navigation according to its own security settings.
+10. Enable separator pages, repeat, and verify one separator before every
    attachment section while order/outlines remain correct.
-10. With no LibreOffice installed, confirm Office/ODF files are disabled with an
+11. With no LibreOffice installed, confirm Office/ODF files are disabled with an
     explicit explanation. On a machine with LibreOffice, confirm those formats
     become selectable and convert without UI or macro prompts.
-11. Confirm an empty-user-password PDF is normalized and merged, then select a
+12. Confirm an empty-user-password PDF is normalized and merged, then select a
     corrupt or password-required PDF and confirm the operation fails with that
     filename and leaves no final/temporary output.
-12. Cancel during transfer, conversion, and merge; confirm no output remains.
-13. Save twice with the same title and confirm collision numbering.
-14. Try multiple selected messages and confirm the extension refuses to choose
+13. Cancel during transfer, conversion, and merge; confirm no output remains.
+14. Save twice with the same title and confirm collision numbering.
+15. Try multiple selected messages and confirm the extension refuses to choose
     one silently.
 
 Record exact Thunderbird, Windows, Chromium, and LibreOffice versions. Do not

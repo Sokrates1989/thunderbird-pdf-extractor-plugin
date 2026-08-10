@@ -18,11 +18,14 @@ content are still validated as untrusted by the companion.
   Archives and unknown types are never expanded or passed to a shell. Unsupported
   files are disabled in review and disclosed in both output views.
 - **PDF active content:** source PDF pages are copied without rasterization, but
-  page additional-actions and annotations are removed from the final writer.
-  Catalog JavaScript, embedded files, and source document open actions are not
-  imported. PDFs accessible with an empty user password are rewritten without
-  encryption before merging; password-required files remain rejected. Final
-  outlines and metadata are created by the companion.
+  page additional-actions and every annotation except normalized `http`,
+  `https`, or `mailto` URI links are removed from the final writer. Retained
+  links are rebuilt with only their rectangle, destination, tooltip text, and a
+  border-free appearance; JavaScript, launch, chained, and automatic actions do
+  not survive. Catalog JavaScript, embedded files, and source document open
+  actions are not imported. PDFs accessible with an empty user password are
+  rewritten without encryption before merging; password-required files remain
+  rejected. Final outlines and metadata are created by the companion.
 - **Image bombs:** Pillow warnings become errors. Frame count, per-frame pixels,
   total pixels, decoded attachment bytes, and final page counts are bounded.
   EXIF orientation is applied before aspect-ratio-preserving rendering.

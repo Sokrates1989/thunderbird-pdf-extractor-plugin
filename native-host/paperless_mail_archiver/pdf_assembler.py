@@ -10,7 +10,16 @@ from xml.sax.saxutils import escape as xml_escape
 
 from pypdf import PasswordType, PdfReader, PdfWriter
 from pypdf.errors import PdfReadError
-from pypdf.generic import Fit, IndirectObject
+from pypdf.generic import (
+    ArrayObject,
+    DictionaryObject,
+    Fit,
+    FloatObject,
+    IndirectObject,
+    NameObject,
+    NumberObject,
+    TextStringObject,
+)
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
@@ -19,11 +28,85 @@ from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph
 
 from paperless_mail_archiver.errors import CancelledError, HostError
+from paperless_mail_archiver.html_sanitizer import safe_link_href
 from paperless_mail_archiver.models import MailDocument
 from paperless_mail_archiver.renderers import register_unicode_font
 
 MAX_PAGES_PER_SECTION = 5_000
 MAX_MERGED_PAGES = 10_000
+
+
+def _safe_link_annotation(
+    reference: IndirectObject | DictionaryObject,
+) -> IndirectObject | DictionaryObject | None:
+    """Normalize one HTTP(S) or mail link and discard every other PDF action."""
+    try:
+        annotation = reference.get_object() if hasattr(reference, "get_object") else reference
+        if not isinstance(annotation, DictionaryObject) or annotation.get("/Subtype") != "/Link":
+            return None
+        action_value = annotation.get("/A")
+        action = (
+            action_value.get_object() if isinstance(action_value, IndirectObject) else action_value
+        )
+        if not isinstance(action, DictionaryObject) or action.get("/S") != "/URI":
+            return None
+        uri_value = action.get("/URI")
+        if not isinstance(uri_value, str):
+            return None
+        uri = safe_link_href(uri_value)
+        if uri is None:
+            return None
+        rect_value = annotation.get("/Rect")
+        rect = rect_value.get_object() if isinstance(rect_value, IndirectObject) else rect_value
+        if not isinstance(rect, ArrayObject) or len(rect) != 4:
+            return None
+        coordinates = [float(value) for value in rect]
+        if not all(abs(value) <= 1_000_000 for value in coordinates):
+            return None
+    except (OverflowError, PdfReadError, TypeError, ValueError):
+        return None
+
+    annotation.clear()
+    annotation.update(
+        {
+            NameObject("/Type"): NameObject("/Annot"),
+            NameObject("/Subtype"): NameObject("/Link"),
+            NameObject("/Rect"): ArrayObject(FloatObject(value) for value in coordinates),
+            NameObject("/Border"): ArrayObject((NumberObject(0), NumberObject(0), NumberObject(0))),
+            NameObject("/Contents"): TextStringObject(uri),
+            NameObject("/A"): DictionaryObject(
+                {
+                    NameObject("/S"): NameObject("/URI"),
+                    NameObject("/URI"): TextStringObject(uri),
+                }
+            ),
+        }
+    )
+    return reference
+
+
+def _sanitize_page_actions(page: DictionaryObject) -> None:
+    """Remove automatic actions while retaining only normalized external URI links."""
+    if "/AA" in page:
+        del page["/AA"]
+    annotation_value = page.get("/Annots")
+    annotations = (
+        annotation_value.get_object()
+        if isinstance(annotation_value, IndirectObject)
+        else annotation_value
+    )
+    if not isinstance(annotations, ArrayObject):
+        page.pop("/Annots", None)
+        return
+    retained = ArrayObject(
+        normalized
+        for reference in annotations
+        if (normalized := _safe_link_annotation(reference)) is not None
+    )
+    if retained:
+        page[NameObject("/Annots")] = retained
+    else:
+        page.pop("/Annots", None)
 
 
 @dataclass(frozen=True, slots=True)
@@ -169,9 +252,7 @@ def assemble_pdf(
         if len(writer.pages) > MAX_MERGED_PAGES:
             raise HostError("merged_pdf_too_large", "The merged PDF contains too many pages.")
         for page in writer.pages:
-            for active_key in ("/AA", "/Annots"):
-                if active_key in page:
-                    del page[active_key]
+            _sanitize_page_actions(page)
         writer.add_metadata(
             {
                 "/Title": title or document.subject,

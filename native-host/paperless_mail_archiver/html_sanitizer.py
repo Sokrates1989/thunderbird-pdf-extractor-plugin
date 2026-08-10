@@ -53,8 +53,31 @@ FORBIDDEN_CONTAINERS = frozenset(
 )
 SAFE_LINK_SCHEMES = frozenset({"http", "https", "mailto"})
 MAX_ALTERNATIVE_TEXT_CHARACTERS = 200
+MAX_LINK_URL_CHARACTERS = 4_096
 
 ImageResolver = Callable[[str], ResolvedImage | None]
+
+
+def safe_link_href(candidate: str) -> str | None:
+    """Return a bounded external link when its scheme and authority are safe."""
+    href = candidate.strip()
+    if not href or len(href) > MAX_LINK_URL_CHARACTERS:
+        return None
+    if any(ord(character) < 32 or ord(character) == 127 for character in href):
+        return None
+    try:
+        parsed = urlparse(href)
+        scheme = parsed.scheme.lower()
+        if scheme not in SAFE_LINK_SCHEMES:
+            return None
+        if scheme in {"http", "https"}:
+            if not parsed.hostname or parsed.username is not None or parsed.password is not None:
+                return None
+        elif not parsed.path:
+            return None
+    except (UnicodeError, ValueError):
+        return None
+    return href
 
 
 class _Sanitizer(HTMLParser):
@@ -85,7 +108,23 @@ class _Sanitizer(HTMLParser):
             ]
             resolved = self.image_resolver(source) if self.image_resolver is not None else None
             if resolved is None:
-                self.output.append(f'<span class="image-placeholder">[{html.escape(label)}]</span>')
+                placeholder = f'<span class="image-placeholder">[{html.escape(label)}]</span>'
+                source_href = safe_link_href(source)
+                if (
+                    source_href is not None
+                    and urlparse(source_href).scheme.lower()
+                    in {
+                        "http",
+                        "https",
+                    }
+                    and not self.open_anchor_indices
+                ):
+                    escaped_href = html.escape(source_href, quote=True)
+                    self.output.append(
+                        f'<a class="image-link" href="{escaped_href}">{placeholder}</a>'
+                    )
+                else:
+                    self.output.append(placeholder)
             else:
                 data_uri = image_to_data_uri(resolved)
                 self.output.append(f'<img src="{data_uri}" alt="{html.escape(label, quote=True)}">')
@@ -99,9 +138,9 @@ class _Sanitizer(HTMLParser):
             return
         if normalized == "a":
             href = attributes.get("href") or ""
-            scheme = urlparse(href).scheme.lower()
-            if scheme in SAFE_LINK_SCHEMES:
-                self.output.append(f'<a href="{html.escape(href, quote=True)}">')
+            safe_href = safe_link_href(href)
+            if safe_href is not None:
+                self.output.append(f'<a href="{html.escape(safe_href, quote=True)}">')
                 self.open_anchor_indices.append(len(self.output) - 1)
                 return
             self.output.append("<a>")

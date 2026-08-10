@@ -29,6 +29,7 @@ MAX_IMAGE_PIXELS = 50_000_000
 REMOTE_FETCH_BUDGET_SECONDS = 30.0
 REMOTE_REQUEST_TIMEOUT_SECONDS = 5.0
 READ_CHUNK_BYTES = 64 * 1024
+REMOTE_IMAGE_ACCEPT = "image/webp,image/png,image/jpeg,image/gif"
 
 
 @dataclass(frozen=True, slots=True)
@@ -222,7 +223,7 @@ def fetch_remote_image(source: str, cancellation: Event, timeout: float) -> Reso
         _validate_remote_url(current_url)
         request = urllib.request.Request(  # noqa: S310 - URL is restricted to validated HTTPS.
             current_url,
-            headers={"Accept": "image/avif,image/webp,image/png,image/jpeg,image/gif"},
+            headers={"Accept": REMOTE_IMAGE_ACCEPT},
             method="GET",
         )
         try:
@@ -345,4 +346,6 @@ def source_file_name(source: str) -> str:
     if parsed.scheme.lower() == "data":
         return ""
     name = PurePosixPath(unquote(parsed.path)).name
+    if not name or len(name) > 80 or "." not in name:
+        return ""
     return name[:120]

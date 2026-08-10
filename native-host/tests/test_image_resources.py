@@ -2,8 +2,21 @@
 
 from http.client import IncompleteRead
 from threading import Event
+from types import TracebackType
+from typing import Self
+from urllib import request as urllib_request
+from urllib.request import Request
 
-from paperless_mail_archiver.image_resources import ImageSourceResolver, ResolvedImage
+import pytest
+
+import paperless_mail_archiver.image_resources as image_resources
+from paperless_mail_archiver.image_resources import (
+    REMOTE_IMAGE_ACCEPT,
+    ImageSourceResolver,
+    ResolvedImage,
+    fetch_remote_image,
+    source_file_name,
+)
 from paperless_mail_archiver.models import InlineImage, MailDocument
 from tests.helpers import VALID_PNG
 
@@ -96,3 +109,58 @@ def test_http_source_is_rejected_without_calling_remote_loader() -> None:
 
     assert resolver.resolve("http://images.example.test/banner.png") is None
     assert called is False
+
+
+def test_remote_request_advertises_only_formats_the_verifier_accepts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A server cannot negotiate AVIF when the local verifier cannot validate it."""
+    requests: list[Request] = []
+
+    class _Response:
+        """Serve one verified PNG through urllib's context-manager boundary."""
+
+        def __init__(self) -> None:
+            self.headers: dict[str, str] = {}
+            self._read = False
+
+        def __enter__(self) -> Self:
+            return self
+
+        def __exit__(
+            self,
+            exception_type: type[BaseException] | None,
+            exception: BaseException | None,
+            traceback: TracebackType | None,
+        ) -> None:
+            del exception_type, exception, traceback
+
+        def read(self, size: int) -> bytes:
+            del size
+            if self._read:
+                return b""
+            self._read = True
+            return VALID_PNG
+
+    class _Opener:
+        """Capture the outgoing request without crossing the network boundary."""
+
+        def open(self, request: Request, timeout: float) -> _Response:
+            del timeout
+            requests.append(request)
+            return _Response()
+
+    monkeypatch.setattr(image_resources, "_validate_remote_url", lambda _source: None)
+    monkeypatch.setattr(urllib_request, "build_opener", lambda *_args: _Opener())
+
+    result = fetch_remote_image("https://images.example.test/banner.png", Event(), 1.0)
+
+    assert result is not None
+    assert requests[0].get_header("Accept") == REMOTE_IMAGE_ACCEPT
+    assert "avif" not in REMOTE_IMAGE_ACCEPT
+
+
+def test_remote_fallback_label_hides_opaque_tracking_tokens() -> None:
+    """An unlabelled tracking URL cannot leak its opaque path into the PDF layout."""
+    assert source_file_name("https://images.example.test/assets/recipe.png") == "recipe.png"
+    assert source_file_name("https://click.example.test/opaqueTrackingTokenWithoutExtension") == ""
