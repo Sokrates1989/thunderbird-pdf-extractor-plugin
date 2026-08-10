@@ -6,6 +6,7 @@ import { DEFAULT_IMAGE_MODE, isImageMode, loadSettings, saveSettings } from "../
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
   Reflect.deleteProperty(globalThis, "browser");
 });
 
@@ -14,6 +15,13 @@ function installStorage(stored: Record<string, unknown>): ReturnType<typeof vi.f
   Object.defineProperty(globalThis, "browser", {
     configurable: true,
     value: {
+      i18n: {
+        getUILanguage: () => "en-US",
+      },
+      runtime: {
+        getManifest: () => ({ version: "0.4.0" }),
+        getURL: (path: string) => `moz-extension://test/${path}`,
+      },
       storage: {
         local: {
           get: vi.fn(() => Promise.resolve(stored)),
@@ -22,6 +30,14 @@ function installStorage(stored: Record<string, unknown>): ReturnType<typeof vi.f
       },
     },
   });
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() =>
+      Promise.resolve(
+        new Response(JSON.stringify({ language: "auto", version: "0.4.0" }), { status: 200 }),
+      ),
+    ),
+  );
   return set;
 }
 
@@ -33,6 +49,7 @@ describe("extension settings", () => {
       imageMode: DEFAULT_IMAGE_MODE,
       outputDirectory: "D:\\Archive",
       separatorPages: false,
+      uiLanguage: "en",
     });
     expect(isImageMode("embed")).toBe(true);
     expect(isImageMode("unexpected")).toBe(false);
@@ -45,9 +62,10 @@ describe("extension settings", () => {
       imageMode: "embed",
       outputDirectory: "  D:\\Archive  ",
       separatorPages: true,
+      uiLanguage: "de",
     });
 
-    expect(set).toHaveBeenCalledWith({
+    expect(set).toHaveBeenLastCalledWith({
       imageMode: "embed",
       outputDirectory: "D:\\Archive",
       separatorPages: true,

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,6 +10,14 @@
     <main>
       <h1 data-i18n="settingsTitle"></h1>
       <p data-i18n="settingsIntroduction"></p>
+      <label>
+        <span data-i18n="languageLabel"></span>
+        <select id="ui-language">
+          <option value="de" data-i18n="languageGerman"></option>
+          <option value="en" data-i18n="languageEnglish"></option>
+        </select>
+      </label>
+      <p class="hint" data-i18n="languageHint"></p>
       <label>
         <span data-i18n="outputDirectoryLabel"></span>
         <span class="directory-controls">

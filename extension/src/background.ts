@@ -1,5 +1,7 @@
 /** Non-persistent background entry point for the Thunderbird action menu. */
 
+import { initializeLocalization, message } from "./ui/i18n";
+
 const MENU_ID = "archive-message-as-pdf";
 
 function reportBackgroundError(error: unknown): void {
@@ -16,12 +18,29 @@ async function installMenu(): Promise<void> {
   await browser.menus.create({
     contexts: ["message_list", "page"],
     id: MENU_ID,
-    title: browser.i18n.getMessage("actionTitle"),
+    title: message("actionTitle"),
   });
 }
 
+async function initializeMenu(): Promise<void> {
+  await initializeLocalization(true);
+  await installMenu();
+}
+
 browser.runtime.onInstalled.addListener(() => {
-  void installMenu().catch(reportBackgroundError);
+  void initializeMenu().catch(reportBackgroundError);
+});
+
+browser.runtime.onMessage.addListener((request) => {
+  if (
+    typeof request === "object" &&
+    request !== null &&
+    "type" in request &&
+    request.type === "refresh-language"
+  ) {
+    return initializeMenu().catch(reportBackgroundError);
+  }
+  return undefined;
 });
 
 browser.menus.onClicked.addListener((info, tab) => {
@@ -47,3 +66,5 @@ browser.menus.onClicked.addListener((info, tab) => {
     })
     .catch(reportBackgroundError);
 });
+
+void initializeMenu().catch(reportBackgroundError);

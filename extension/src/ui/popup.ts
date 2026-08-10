@@ -1,14 +1,21 @@
 /** Review popup for a single explicit email-to-PDF operation. */
 
-import { UserFacingError, errorMessage } from "../domain/errors";
-import type { AttachmentSummary, ImageMode, MessageSummary } from "../domain/models";
+import { UserFacingError } from "../domain/errors";
+import type { AttachmentSummary, ImageMode, MessageSummary, UiLanguage } from "../domain/models";
 import { NativeArchiveClient, type ProgressUpdate } from "../protocol/native-client";
 import { attachmentSupport, type AttachmentSupportReason } from "../services/attachment-support";
 import { defaultTitle, sanitizePdfFileName } from "../services/filename";
 import { displayedMessage, listAttachmentSummaries, rawMessage } from "../services/message";
 import { DEFAULT_IMAGE_MODE, isImageMode, loadSettings, saveSettings } from "../services/settings";
 import { createTransferPayload } from "../services/transfer";
-import { localizeDocument, message, requiredElement } from "./i18n";
+import {
+  initializeLocalization,
+  locale,
+  localizedErrorMessage,
+  localizeDocument,
+  message,
+  requiredElement,
+} from "./i18n";
 import { transitionPhase, type PopupPhase } from "./phase";
 
 const loadingPanel = requiredElement("loading-panel", HTMLElement);
@@ -44,6 +51,7 @@ let selectedMessage: MessageSummary | undefined;
 let detectedAttachments: readonly AttachmentSummary[] = [];
 let outputDirectory = "";
 let imageMode: ImageMode = DEFAULT_IMAGE_MODE;
+let uiLanguage: UiLanguage = "en";
 let libreOfficeAvailable = false;
 const selectedAttachmentIndices = new Set<number>();
 let currentAbortController: AbortController | undefined;
@@ -57,13 +65,14 @@ function showPanel(panel: HTMLElement, nextPhase: PopupPhase): void {
 }
 
 function formatBytes(size: number): string {
+  const numberFormat = new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 });
   if (size < 1024) {
-    return `${String(size)} B`;
+    return `${numberFormat.format(size)} B`;
   }
   if (size < 1024 * 1024) {
-    return `${(size / 1024).toFixed(1)} KiB`;
+    return `${numberFormat.format(size / 1024)} KiB`;
   }
-  return `${(size / (1024 * 1024)).toFixed(1)} MiB`;
+  return `${numberFormat.format(size / (1024 * 1024))} MiB`;
 }
 
 function renderAttachments(attachments: readonly AttachmentSummary[]): void {
@@ -119,7 +128,7 @@ function renderAttachments(attachments: readonly AttachmentSummary[]): void {
 }
 
 function refreshFilename(): void {
-  fileNameValue.textContent = sanitizePdfFileName(titleInput.value);
+  fileNameValue.textContent = sanitizePdfFileName(titleInput.value, message("defaultFileName"));
 }
 
 function progressMessage(progress: ProgressUpdate): string {
@@ -133,7 +142,7 @@ function progressMessage(progress: ProgressUpdate): string {
     merging: "progressMerging",
   };
   const base = message(keyByStage[progress.stage] ?? "progressGeneric");
-  return progress.detail.length > 0 ? `${base} ${progress.detail}` : base;
+  return progress.detail.length > 0 ? message("progressWithDetail", [base, progress.detail]) : base;
 }
 
 function updateProgress(progress: ProgressUpdate): void {
@@ -158,7 +167,7 @@ function showError(error: unknown): void {
   resultSummary.textContent = userSummary(error);
   resultPath.textContent = "";
   resultAttachments.replaceChildren();
-  errorDetailText.textContent = errorMessage(error);
+  errorDetailText.textContent = localizedErrorMessage(error);
   errorDetails.classList.remove("hidden");
   archiveButton.disabled = true;
   archiveButton.classList.remove("hidden");
@@ -168,6 +177,7 @@ function showError(error: unknown): void {
 }
 
 async function loadReview(): Promise<void> {
+  await initializeLocalization();
   localizeDocument();
   showPanel(loadingPanel, "loading");
   const parameters = new URLSearchParams(window.location.search);
@@ -201,6 +211,7 @@ async function loadReview(): Promise<void> {
   detectedAttachments = attachments;
   outputDirectory = settings.outputDirectory;
   imageMode = settings.imageMode;
+  uiLanguage = settings.uiLanguage;
   libreOfficeAvailable = capabilities.libreOfficeAvailable;
   separatorPages.checked = settings.separatorPages;
   selectedAttachmentIndices.clear();
@@ -215,11 +226,16 @@ async function loadReview(): Promise<void> {
 
   senderValue.textContent = summary.author;
   subjectValue.textContent = summary.subject;
-  dateValue.textContent = new Intl.DateTimeFormat(undefined, {
+  dateValue.textContent = new Intl.DateTimeFormat(locale(), {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(summary.date);
-  titleInput.value = defaultTitle(summary.date, summary.author, summary.subject);
+  titleInput.value = defaultTitle(
+    summary.date,
+    summary.author,
+    summary.subject,
+    message("defaultSubject"),
+  );
   directoryValue.textContent = outputDirectory.length > 0 ? outputDirectory : message("directoryNotConfigured");
   imageModeSelect.value = imageMode;
   renderAttachments(attachments);
@@ -249,9 +265,10 @@ async function browseForDirectory(): Promise<void> {
       imageMode,
       outputDirectory,
       separatorPages: separatorPages.checked,
+      uiLanguage,
     });
   } catch (error: unknown) {
-    reviewStatus.textContent = message("connectionFailure", errorMessage(error));
+    reviewStatus.textContent = message("connectionFailure", localizedErrorMessage(error));
   } finally {
     selectDirectoryButton.disabled = false;
   }
@@ -273,6 +290,7 @@ async function archive(): Promise<void> {
     imageMode,
     outputDirectory,
     separatorPages: separatorPages.checked,
+    uiLanguage,
   });
 
   archiveButton.disabled = true;
@@ -288,7 +306,7 @@ async function archive(): Promise<void> {
       attachmentCount: detectedAttachments.filter(
         (attachment) => attachment.classification === "attachment",
       ).length,
-      fileName: sanitizePdfFileName(titleInput.value),
+      fileName: sanitizePdfFileName(titleInput.value, message("defaultFileName")),
       includeBody: includeBody.checked,
       imageMode,
       selectedAttachmentIndices: [...selectedAttachmentIndices].sort((left, right) => left - right),
@@ -339,7 +357,7 @@ async function openDestinationDirectory(): Promise<void> {
   try {
     await new NativeArchiveClient().openOutputDirectory(outputDirectory);
   } catch (error: unknown) {
-    errorDetailText.textContent = errorMessage(error);
+    errorDetailText.textContent = localizedErrorMessage(error);
     errorDetails.classList.remove("hidden");
   } finally {
     openDirectoryButton.disabled = false;

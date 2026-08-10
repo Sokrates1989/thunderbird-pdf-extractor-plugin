@@ -1,11 +1,57 @@
-/** Safe DOM localization helpers for static extension pages. */
+/** Safe catalog-backed localization helpers for extension-owned pages. */
+
+import { UserFacingError } from "../domain/errors";
+import type { UiLanguage } from "../domain/models";
+import { currentLanguage, initializeLanguage } from "../services/language";
+
+interface LocaleEntry {
+  readonly message: string;
+}
+
+type LocaleCatalog = Readonly<Record<string, LocaleEntry>>;
+
+let catalog: LocaleCatalog = {};
+let fallbackCatalog: LocaleCatalog = {};
+
+async function loadCatalog(language: UiLanguage): Promise<LocaleCatalog> {
+  const response = await fetch(browser.runtime.getURL(`_locales/${language}/messages.json`));
+  if (!response.ok) {
+    throw new Error(`Locale catalog '${language}' could not be loaded.`);
+  }
+  return (await response.json()) as LocaleCatalog;
+}
+
+export async function initializeLocalization(force = false): Promise<UiLanguage> {
+  const language = await initializeLanguage(force);
+  [catalog, fallbackCatalog] = await Promise.all([
+    loadCatalog(language),
+    language === "en" ? Promise.resolve({}) : loadCatalog("en"),
+  ]);
+  return language;
+}
+
+function substitutionValues(substitutions?: string | readonly string[]): readonly string[] {
+  if (substitutions === undefined) {
+    return [];
+  }
+  return typeof substitutions === "string" ? [substitutions] : substitutions;
+}
 
 export function message(key: string, substitutions?: string | readonly string[]): string {
-  return browser.i18n.getMessage(key, substitutions);
+  const template = catalog[key]?.message ?? fallbackCatalog[key]?.message ?? key;
+  const values = substitutionValues(substitutions);
+  return template.replace(/\$(\d+)/gu, (placeholder, indexText: string) => {
+    const index = Number(indexText) - 1;
+    return values[index] ?? placeholder;
+  });
+}
+
+export function locale(): UiLanguage {
+  return currentLanguage();
 }
 
 export function localizeDocument(): void {
-  document.documentElement.lang = navigator.language.split("-")[0] ?? "en";
+  document.documentElement.lang = locale();
   for (const element of document.querySelectorAll<HTMLElement>("[data-i18n]")) {
     const key = element.dataset.i18n;
     if (key !== undefined) {
@@ -24,6 +70,25 @@ export function localizeDocument(): void {
       element.placeholder = message(key);
     }
   }
+}
+
+/** Translate stable failure codes at the presentation boundary without exposing host prose. */
+export function localizedErrorMessage(error: unknown): string {
+  if (error instanceof DOMException && error.name === "AbortError") {
+    return message("archiveCancelled");
+  }
+  if (error instanceof UserFacingError) {
+    const keyByCode: Readonly<Record<string, string>> = {
+      host_disconnected: "errorHostDisconnected",
+      host_timeout: "errorHostTimeout",
+      incompatible_host: "errorIncompatibleHost",
+      output_directory_missing: "directoryNotConfigured",
+      single_message_required: "singleMessageRequired",
+    };
+    const key = keyByCode[error.code];
+    return key === undefined ? message("technicalErrorWithCode", error.code) : message(key);
+  }
+  return message("technicalErrorGeneric");
 }
 
 type ElementConstructor<T> = new () => T;

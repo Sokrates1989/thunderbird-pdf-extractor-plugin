@@ -1,6 +1,7 @@
 /** Non-secret extension preferences stored in Thunderbird storage.local. */
 
-import type { ExtensionSettings, ImageMode } from "../domain/models";
+import type { ExtensionSettings, ImageMode, UiLanguage } from "../domain/models";
+import { initializeLanguage, isUiLanguage, setUiLanguage } from "./language";
 
 const OUTPUT_DIRECTORY_KEY = "outputDirectory";
 const IMAGE_MODE_KEY = "imageMode";
@@ -25,13 +26,18 @@ export async function loadSettings(): Promise<ExtensionSettings> {
     imageMode: isImageMode(imageMode) ? imageMode : DEFAULT_IMAGE_MODE,
     outputDirectory: typeof outputDirectory === "string" ? outputDirectory : "",
     separatorPages: stored[SEPARATOR_PAGES_KEY] === true,
+    uiLanguage: await initializeLanguage(),
   };
 }
 
 export async function saveSettings(settings: ExtensionSettings): Promise<void> {
+  await setUiLanguage(settings.uiLanguage);
   await browser.storage.local.set({
     [IMAGE_MODE_KEY]: settings.imageMode,
     [OUTPUT_DIRECTORY_KEY]: settings.outputDirectory.trim(),
     [SEPARATOR_PAGES_KEY]: settings.separatorPages,
   });
 }
+
+export { isUiLanguage };
+export type { UiLanguage };

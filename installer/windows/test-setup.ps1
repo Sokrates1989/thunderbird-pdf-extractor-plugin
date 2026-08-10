@@ -6,7 +6,7 @@ Runs the Windows setup and uninstaller against isolated files and registry keys.
 [CmdletBinding()]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
-    [string]$Version = '0.3.0'
+    [string]$Version = '0.4.0'
 )
 
 Set-StrictMode -Version Latest
@@ -109,6 +109,33 @@ function Remove-TestRegistryInView {
     }
 }
 
+function Get-InstallerLanguageFromXpi {
+    <# Read the bounded installer hand-off file from an XPI package. #>
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($Path)
+    try {
+        $entry = $archive.GetEntry('install-defaults.json')
+        if ($null -eq $entry) {
+            throw "XPI '$Path' omits install-defaults.json."
+        }
+        $reader = New-Object System.IO.StreamReader($entry.Open())
+        try {
+            return (($reader.ReadToEnd() | ConvertFrom-Json).language)
+        }
+        finally {
+            $reader.Dispose()
+        }
+    }
+    finally {
+        $archive.Dispose()
+    }
+}
+
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $testRoot = [System.IO.Path]::GetFullPath(
     (Join-Path $env:LOCALAPPDATA 'ThunderbirdPdfArchiverInstallerTest')
@@ -140,7 +167,7 @@ try {
     $installer = & (Join-Path $PSScriptRoot 'build-setup.ps1') -Version $Version -TestMode
     $installer = [System.IO.Path]::GetFullPath(($installer | Select-Object -Last 1))
     Invoke-CheckedProcess -Executable $installer -Arguments @(
-        '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART'
+        '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/LANG=english'
     )
 
     $installDirectory = Join-Path $testRoot $Version
@@ -153,6 +180,9 @@ try {
         if (-not (Test-Path -LiteralPath $installedFile -PathType Leaf)) {
             throw "Installer omitted '$installedFile'."
         }
+    }
+    if ((Get-InstallerLanguageFromXpi -Path $installedExtension) -ne 'en') {
+        throw 'The English setup selection was not handed to the installed extension.'
     }
     if ((Get-FileHash -LiteralPath $installedExtension -Algorithm SHA256).Hash -ne
         (Get-FileHash -LiteralPath $profileExtension -Algorithm SHA256).Hash) {

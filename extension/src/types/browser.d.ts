@@ -51,6 +51,7 @@ interface ThunderbirdMenuClickInfo {
 interface ThunderbirdApi {
   readonly i18n: {
     getMessage(messageName: string, substitutions?: string | readonly string[]): string;
+    getUILanguage(): string;
   };
   readonly menus: {
     create(createProperties: {
@@ -77,11 +78,16 @@ interface ThunderbirdApi {
   readonly runtime: {
     readonly id: string;
     connectNative(application: string): ThunderbirdNativePort;
+    getManifest(): { readonly version: string };
     getURL(path: string): string;
     readonly onInstalled: {
       addListener(listener: () => void): void;
     };
+    readonly onMessage: {
+      addListener(listener: (message: unknown) => void | Promise<void>): void;
+    };
     openOptionsPage(): Promise<void>;
+    sendMessage(message: object): Promise<unknown>;
   };
   readonly storage: {
     readonly local: {

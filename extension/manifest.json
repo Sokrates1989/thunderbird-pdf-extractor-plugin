@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "default_locale": "de",
   "browser_specific_settings": {
     "gecko": {
@@ -16,11 +16,18 @@
     "nativeMessaging",
     "storage"
   ],
+  "icons": {
+    "16": "assets/icon.svg",
+    "32": "assets/icon.svg",
+    "48": "assets/icon.svg",
+    "64": "assets/icon.svg"
+  },
   "background": {
     "scripts": ["background.js"],
     "type": "module"
   },
   "message_display_action": {
+    "default_icon": "assets/icon.svg",
     "default_title": "__MSG_actionTitle__",
     "default_popup": "pages/popup/popup.html"
   },

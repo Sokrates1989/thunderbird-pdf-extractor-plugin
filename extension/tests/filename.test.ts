@@ -10,13 +10,16 @@ describe("filename generation", () => {
       new Date(2026, 7, 10, 12, 30),
       '"Erika Muster" <erika@example.test>',
       "Rechnung August",
+      "E-Mail",
     );
     expect(title).toBe("2026-08-10 - Erika Muster - Rechnung August");
   });
 
   it("sanitizes illegal Windows characters and reserved device names", () => {
-    expect(sanitizePdfFileName('Rechnung: 10/08 <final>')).toBe("Rechnung_ 10_08 _final_.pdf");
-    expect(sanitizePdfFileName("CON")).toBe("_CON.pdf");
+    expect(sanitizePdfFileName('Rechnung: 10/08 <final>', "E-Mail")).toBe(
+      "Rechnung_ 10_08 _final_.pdf",
+    );
+    expect(sanitizePdfFileName("CON", "E-Mail")).toBe("_CON.pdf");
   });
 
   it("falls back to the address when no display name is present", () => {

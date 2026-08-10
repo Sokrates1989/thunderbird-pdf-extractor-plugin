@@ -22,10 +22,14 @@ export interface AttachmentSummary {
 /** Select whether body images remain placeholders or are resolved into the PDF. */
 export type ImageMode = "placeholder" | "embed";
 
+/** Explicit language used by extension-owned user interfaces. */
+export type UiLanguage = "de" | "en";
+
 export interface ExtensionSettings {
   readonly imageMode: ImageMode;
   readonly outputDirectory: string;
   readonly separatorPages: boolean;
+  readonly uiLanguage: UiLanguage;
 }
 
 export interface ArchiveMetadata {

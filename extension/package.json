@@ -1,6 +1,6 @@
 {
   "name": "thunderbird-pdf-extractor-extension",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -10,7 +10,7 @@
     "build": "node scripts/build.mjs",
     "clean": "node scripts/build.mjs --clean",
     "lint": "eslint .",
-    "package": "npm run build && node scripts/package.mjs",
+    "package": "npm run build && node scripts/package.mjs && node scripts/package.mjs --language=de && node scripts/package.mjs --language=en",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

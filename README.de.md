@@ -1,4 +1,4 @@
-# Thunderbird PDF-Archivierung
+# Thunderbird PDF Archiver
 
 Diese Thunderbird-128+-Erweiterung speichert genau eine bewusst ausgewählte
 E-Mail und ausgewählte unterstützte Anhänge als eine durchsuchbare PDF-Datei in
@@ -6,7 +6,13 @@ einem vorhandenen lokalen Ordner. Die Quellnachricht wird weder verschoben noch
 markiert oder gelöscht. Ein Paperless-Upload und Zugangsdaten sind nicht Teil
 dieses lokalen Arbeitsablaufs.
 
-## Umfang von Release 0.3.0
+## Umfang von Release 0.4.0
+
+Das Add-on heißt nun durchgängig **Thunderbird PDF Archiver** und besitzt ein
+eigenes PDF-Symbol. Prüfdialog, Einstellungen, Kontextmenü, Prüfmeldungen und
+Fehler stehen vollständig auf Deutsch und Englisch zur Verfügung. Der
+Windows-Installer fragt nach der anfänglichen Sprache; später kann sie jederzeit
+in den Add-on-Einstellungen geändert werden.
 
 Der Prüfdialog zeigt Dateiname, MIME-Typ, Größe, Unterstützung und Auswahlstatus
 aller erkannten Elemente. Unterstützte echte Anhänge sind vorausgewählt.
@@ -33,14 +39,14 @@ Nicht eingebettete Bilder bleiben als klickbare Platzhalter erhalten, wenn eine
 sichere Webadresse oder ein umschließender Weblink vorhanden ist. Lesbare
 Linktexte bleiben erhalten, ohne lange Tracking-Adressen daneben auszudrucken.
 
-Release 0.3.0 ergänzt eine redigierte lokale Diagnose, ein begrenztes rotierendes
+Release 0.3.0 führte eine redigierte lokale Diagnose, ein begrenztes rotierendes
 JSONL-Protokoll, Versions- und SHA-256-Prüfungen bei der Installation sowie ein
 portables Windows-Release-ZIP. Diagnose und Protokoll enthalten keine
 E-Mail-Inhalte, Dateinamen, URLs, Anhangsnamen oder lokalen Pfade.
 
 ## Unter Windows installieren
 
-Lade `Thunderbird-PDF-Archiver-Setup-0.3.0-win-x64.exe` herunter und starte die
+Lade `Thunderbird-PDF-Archiver-Setup-0.4.0-win-x64.exe` herunter und starte die
 Datei. Der benutzerbezogene Installer benötigt keine Administratorrechte. Er
 installiert den nativen Begleiter, registriert ihn für 32- und 64-Bit-Thunderbird
 und installiert oder aktualisiert die XPI in allen vorhandenen Thunderbird-
@@ -71,7 +77,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\test-set
 ```
 
 Der Build erzeugt die primäre Installationsdatei unter
-`artifacts\Thunderbird-PDF-Archiver-Setup-0.3.0-win-x64.exe`. Der isolierte
+`artifacts\Thunderbird-PDF-Archiver-Setup-0.4.0-win-x64.exe`. Der isolierte
 Setup-Test verwendet ausschließlich eigene LocalAppData- und Registry-Ziele und
 entfernt sie anschließend wieder. Ein echtes Thunderbird-Profil wird nicht
 berührt.
@@ -80,11 +86,11 @@ Der ältere PowerShell-Installer und die einzelne XPI bleiben für die technisch
 Fehlersuche erhalten, sind aber nicht mehr der empfohlene Installationsweg.
 
 Setup installiert ohne Administratorrechte unter
-`%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.3.0`. LibreOffice ist nur für die
+`%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.4.0`. LibreOffice ist nur für die
 Office-/ODF-Konvertierung erforderlich.
 
 Der Build erzeugt zusätzlich
-`artifacts\thunderbird-pdf-archiver-0.3.0-windows.zip`. Nach dem Entpacken kann
+`artifacts\thunderbird-pdf-archiver-0.4.0-windows.zip`. Nach dem Entpacken kann
 ein Windows-Benutzer `installer\windows\install.ps1` ausführen und die enthaltene
 XPI installieren; Node.js, Python und Administratorrechte werden nicht benötigt.
 
@@ -93,7 +99,7 @@ XPI installieren; Node.js, Python und Administratorrechte werden nicht benötigt
 Die alte Version vorher nicht deinstallieren. Führe direkt die Setup-EXE aus. Sie
 beendet Thunderbird kontrolliert, aktualisiert eine vorhandene Profil-XPI,
 registriert die XPI für neue Profile und startet Thunderbird wieder. Durch die
-feste Add-on-ID bleiben Zielordner, Bildmodus und Trennseiten-Einstellung
+feste Add-on-ID bleiben Zielordner, Bildmodus, Trennseiten-Einstellung und Sprache
 erhalten.
 
 ## PDF-Links im Browser

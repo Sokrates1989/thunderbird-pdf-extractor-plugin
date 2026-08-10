@@ -11,17 +11,22 @@ export function senderDisplayName(author: string): string {
   return unquoted.length > 0 ? unquoted : author.trim();
 }
 
-export function defaultTitle(date: Date, author: string, subject: string): string {
+export function defaultTitle(
+  date: Date,
+  author: string,
+  subject: string,
+  fallbackSubject: string,
+): string {
   const datePart = [
     String(date.getFullYear()).padStart(YEAR_WIDTH, "0"),
     String(date.getMonth() + 1).padStart(2, "0"),
     String(date.getDate()).padStart(2, "0"),
   ].join("-");
-  const normalizedSubject = subject.trim().length > 0 ? subject.trim() : "E-Mail";
+  const normalizedSubject = subject.trim().length > 0 ? subject.trim() : fallbackSubject;
   return `${datePart} - ${senderDisplayName(author)} - ${normalizedSubject}`;
 }
 
-export function sanitizePdfFileName(title: string): string {
+export function sanitizePdfFileName(title: string, fallbackBaseName: string): string {
   const normalized = title
     .normalize("NFC")
     // The explicit C0 range is required because Windows rejects those characters.
@@ -30,7 +35,7 @@ export function sanitizePdfFileName(title: string): string {
     .replace(/\s+/gu, " ")
     .trim()
     .replace(/[. ]+$/gu, "");
-  const baseName = normalized.length > 0 ? normalized : "E-Mail";
+  const baseName = normalized.length > 0 ? normalized : fallbackBaseName;
   const safeBaseName = RESERVED_WINDOWS_NAMES.test(baseName) ? `_${baseName}` : baseName;
   const maxBaseLength = MAX_FILENAME_LENGTH - ".pdf".length;
   const truncated = safeBaseName.slice(0, maxBaseLength).replace(/[. ]+$/gu, "");

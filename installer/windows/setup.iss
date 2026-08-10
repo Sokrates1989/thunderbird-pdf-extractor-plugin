@@ -1,7 +1,7 @@
 ; Builds the per-user Windows setup around the already verified XPI and native-host artifacts.
 
 #ifndef AppVersion
-  #define AppVersion "0.3.0"
+  #define AppVersion "0.4.0"
 #endif
 
 #define AppName "Thunderbird PDF Archiver"
@@ -9,6 +9,8 @@
 #define AppUrl "https://github.com/Sokrates1989/thunderbird-pdf-extractor-plugin"
 #define ExtensionId "thunderbird-pdf-archiver@sokrates1989.de"
 #define ExtensionFileName "thunderbird-pdf-archiver-" + AppVersion + ".xpi"
+#define GermanExtensionSource "thunderbird-pdf-archiver-" + AppVersion + "-de.xpi"
+#define EnglishExtensionSource "thunderbird-pdf-archiver-" + AppVersion + "-en.xpi"
 #define NativeHostName "de.sokrates1989.thunderbird_pdf_archiver"
 #define NativeHostFileName "thunderbird-pdf-archiver-host.exe"
 #define NativeManifestFileName NativeHostName + ".json"
@@ -48,6 +50,7 @@ OutputBaseFilename={#SetupOutputName}
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern dynamic
+ShowLanguageDialog=yes
 SetupLogging=yes
 UninstallDisplayName={#AppName}
 LicenseFile=..\..\LICENSE
@@ -76,7 +79,8 @@ english.ProfileInstallFailed=The extension could not be copied into the Thunderb
 
 [Files]
 Source: "..\..\artifacts\native-host\{#NativeHostFileName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\artifacts\{#ExtensionFileName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\artifacts\{#GermanExtensionSource}"; DestDir: "{app}"; DestName: "{#ExtensionFileName}"; Flags: ignoreversion; Languages: german
+Source: "..\..\artifacts\{#EnglishExtensionSource}"; DestDir: "{app}"; DestName: "{#ExtensionFileName}"; Flags: ignoreversion; Languages: english
 Source: "native-manifest.json"; DestDir: "{app}"; DestName: "{#NativeManifestFileName}"; Flags: ignoreversion
 Source: "..\..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\THIRD_PARTY_NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion

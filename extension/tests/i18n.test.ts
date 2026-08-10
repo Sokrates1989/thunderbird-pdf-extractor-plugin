@@ -21,6 +21,15 @@ describe("extension locales", () => {
     expect(Object.keys(german).sort()).toEqual(Object.keys(english).sort());
     expect(Object.values(german).every((entry) => entry.message.trim().length > 0)).toBe(true);
     expect(Object.values(english).every((entry) => entry.message.trim().length > 0)).toBe(true);
+    for (const key of Object.keys(german)) {
+      const germanPlaceholders = [...(german[key]?.message ?? "").matchAll(/\$(\d+)/gu)].map(
+        (match) => match[1],
+      );
+      const englishPlaceholders = [...(english[key]?.message ?? "").matchAll(/\$(\d+)/gu)].map(
+        (match) => match[1],
+      );
+      expect(germanPlaceholders.sort(), key).toEqual(englishPlaceholders.sort());
+    }
   });
 
   it("resolves every localized manifest placeholder in both locales", async () => {
@@ -44,7 +53,7 @@ describe("extension locales", () => {
     ];
     const pages = await Promise.all(pagePaths.map(async (pagePath) => readFile(pagePath, "utf-8")));
     const keys = pages.flatMap((page) =>
-      [...page.matchAll(/data-i18n(?:-placeholder)?="([A-Za-z0-9_]+)"/gu)].map(
+      [...page.matchAll(/data-i18n(?:-placeholder|-aria-label)?="([A-Za-z0-9_]+)"/gu)].map(
         (match) => match[1],
       ),
     );
@@ -56,5 +65,20 @@ describe("extension locales", () => {
       expect(german).toHaveProperty(key ?? "");
       expect(english).toHaveProperty(key ?? "");
     }
+  });
+
+  it("ships an automatic manual-install default and language-specific setup packages", async () => {
+    const defaultsPath = path.resolve(import.meta.dirname, "..", "install-defaults.json");
+    const defaults = JSON.parse(await readFile(defaultsPath, "utf-8")) as {
+      readonly language: string;
+      readonly version: string;
+    };
+    const setupPath = path.resolve(import.meta.dirname, "..", "..", "installer", "windows", "setup.iss");
+    const setup = await readFile(setupPath, "utf-8");
+
+    expect(defaults).toEqual({ language: "auto", version: "0.4.0" });
+    expect(setup).toContain("ShowLanguageDialog=yes");
+    expect(setup).toContain("Languages: german");
+    expect(setup).toContain("Languages: english");
   });
 });

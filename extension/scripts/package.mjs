@@ -10,7 +10,16 @@ import { ZipArchive } from "archiver";
 const extensionRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repositoryRoot = path.resolve(extensionRoot, "..");
 const artifactDirectory = path.join(repositoryRoot, "artifacts");
-const artifactPath = path.join(artifactDirectory, "thunderbird-pdf-archiver-0.3.0.xpi");
+const languageArgument = process.argv.find((argument) => argument.startsWith("--language="));
+const language = languageArgument?.split("=")[1] ?? "auto";
+if (!["auto", "de", "en"].includes(language)) {
+  throw new Error(`Unsupported installer language '${language}'.`);
+}
+const languageSuffix = language === "auto" ? "" : `-${language}`;
+const artifactPath = path.join(
+  artifactDirectory,
+  `thunderbird-pdf-archiver-0.4.0${languageSuffix}.xpi`,
+);
 
 await mkdir(artifactDirectory, { recursive: true });
 
@@ -22,7 +31,14 @@ await new Promise((resolve, reject) => {
   output.on("error", reject);
   archive.on("error", reject);
   archive.pipe(output);
-  archive.directory(path.join(extensionRoot, "dist"), false);
+  archive.glob("**/*", {
+    cwd: path.join(extensionRoot, "dist"),
+    dot: true,
+    ignore: ["install-defaults.json"],
+  });
+  archive.append(`${JSON.stringify({ language, version: "0.4.0" }, undefined, 2)}\n`, {
+    name: "install-defaults.json",
+  });
   void archive.finalize();
 });
 

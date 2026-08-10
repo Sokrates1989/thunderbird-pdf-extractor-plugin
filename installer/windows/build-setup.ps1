@@ -6,7 +6,7 @@ Compiles the per-user Windows setup from verified extension and native-host arti
 [CmdletBinding()]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
-    [string]$Version = '0.3.0',
+    [string]$Version = '0.4.0',
 
     [switch]$TestMode
 )
@@ -41,8 +41,9 @@ function Find-InnoSetupCompiler {
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $artifactRoot = Join-Path $repositoryRoot 'artifacts'
 $hostArtifact = Join-Path $artifactRoot 'native-host\thunderbird-pdf-archiver-host.exe'
-$extensionArtifact = Join-Path $artifactRoot "thunderbird-pdf-archiver-$Version.xpi"
-foreach ($artifact in @($hostArtifact, $extensionArtifact)) {
+$germanExtensionArtifact = Join-Path $artifactRoot "thunderbird-pdf-archiver-$Version-de.xpi"
+$englishExtensionArtifact = Join-Path $artifactRoot "thunderbird-pdf-archiver-$Version-en.xpi"
+foreach ($artifact in @($hostArtifact, $germanExtensionArtifact, $englishExtensionArtifact)) {
     if (-not (Test-Path -LiteralPath $artifact -PathType Leaf)) {
         throw "Required installer artifact not found at '$artifact'. Run build.ps1 first."
     }

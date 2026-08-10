@@ -34,3 +34,8 @@ await build({
 await cp(path.join(extensionRoot, "manifest.json"), path.join(outputDirectory, "manifest.json"));
 await cp(path.join(extensionRoot, "pages"), path.join(outputDirectory, "pages"), { recursive: true });
 await cp(path.join(extensionRoot, "_locales"), path.join(outputDirectory, "_locales"), { recursive: true });
+await cp(path.join(extensionRoot, "assets"), path.join(outputDirectory, "assets"), { recursive: true });
+await cp(
+  path.join(extensionRoot, "install-defaults.json"),
+  path.join(outputDirectory, "install-defaults.json"),
+);

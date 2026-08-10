@@ -1,11 +1,17 @@
 /** Settings page for the non-secret local output preference and host diagnostics. */
 
-import { errorMessage } from "../domain/errors";
 import { NativeArchiveClient, type NativeDiagnostics } from "../protocol/native-client";
-import { isImageMode, loadSettings, saveSettings } from "../services/settings";
-import { localizeDocument, message, requiredElement } from "./i18n";
+import { isImageMode, isUiLanguage, loadSettings, saveSettings } from "../services/settings";
+import {
+  initializeLocalization,
+  localizedErrorMessage,
+  localizeDocument,
+  message,
+  requiredElement,
+} from "./i18n";
 
 const outputDirectoryInput = requiredElement("output-directory", HTMLInputElement);
+const uiLanguageSelect = requiredElement("ui-language", HTMLSelectElement);
 const imageModeSelect = requiredElement("image-mode", HTMLSelectElement);
 const separatorPagesInput = requiredElement("separator-pages", HTMLInputElement);
 const browseButton = requiredElement("browse-button", HTMLButtonElement);
@@ -19,11 +25,13 @@ function directoryValue(): string {
 }
 
 async function initialize(): Promise<void> {
+  await initializeLocalization();
   localizeDocument();
   const settings = await loadSettings();
   outputDirectoryInput.value = settings.outputDirectory;
   imageModeSelect.value = settings.imageMode;
   separatorPagesInput.checked = settings.separatorPages;
+  uiLanguageSelect.value = settings.uiLanguage;
 }
 
 async function save(): Promise<void> {
@@ -31,11 +39,20 @@ async function save(): Promise<void> {
   if (!isImageMode(imageMode)) {
     throw new Error("The selected image mode is invalid.");
   }
+  const uiLanguage = uiLanguageSelect.value;
+  if (!isUiLanguage(uiLanguage)) {
+    throw new Error("The selected UI language is invalid.");
+  }
   await saveSettings({
     imageMode,
     outputDirectory: directoryValue(),
     separatorPages: separatorPagesInput.checked,
+    uiLanguage,
   });
+  await initializeLocalization(true);
+  localizeDocument();
+  uiLanguageSelect.value = uiLanguage;
+  await browser.runtime.sendMessage({ type: "refresh-language" });
   status.textContent = message("settingsSaved");
 }
 
@@ -55,7 +72,7 @@ async function browseForDirectory(): Promise<void> {
       status.textContent = "";
     }
   } catch (error: unknown) {
-    status.textContent = message("connectionFailure", errorMessage(error));
+    status.textContent = message("connectionFailure", localizedErrorMessage(error));
   } finally {
     browseButton.disabled = false;
   }
@@ -71,7 +88,7 @@ async function testConnection(): Promise<void> {
     renderDiagnostics(diagnostics);
     status.textContent = message("diagnosticsCompleted");
   } catch (error: unknown) {
-    status.textContent = message("connectionFailure", errorMessage(error));
+    status.textContent = message("connectionFailure", localizedErrorMessage(error));
   } finally {
     testButton.disabled = false;
   }
@@ -101,7 +118,7 @@ function renderDiagnostics(diagnostics: NativeDiagnostics): void {
 
 saveButton.addEventListener("click", () => {
   void save().catch((error: unknown) => {
-    status.textContent = message("connectionFailure", errorMessage(error));
+    status.textContent = message("connectionFailure", localizedErrorMessage(error));
   });
 });
 testButton.addEventListener("click", () => {
@@ -112,5 +129,5 @@ browseButton.addEventListener("click", () => {
 });
 
 void initialize().catch((error: unknown) => {
-  status.textContent = message("connectionFailure", errorMessage(error));
+  status.textContent = message("connectionFailure", localizedErrorMessage(error));
 });

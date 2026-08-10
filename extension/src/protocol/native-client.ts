@@ -6,7 +6,7 @@ import type { TransferPayload } from "../services/transfer";
 
 const HOST_NAME = "de.sokrates1989.thunderbird_pdf_archiver";
 const PROTOCOL_VERSION = "1.0";
-export const EXTENSION_COMPONENT_VERSION = "0.3.0";
+export const EXTENSION_COMPONENT_VERSION = "0.4.0";
 const RESPONSE_TIMEOUT_MILLISECONDS = 30_000;
 const COMMIT_TIMEOUT_MILLISECONDS = 600_000;
 const DIRECTORY_PICKER_TIMEOUT_MILLISECONDS = 600_000;
