@@ -10,5 +10,6 @@ native-host/build/
 native-host/dist/
 native-host/*.egg-info/
 artifacts/
+/build/
 *.pyc
 __pycache__/

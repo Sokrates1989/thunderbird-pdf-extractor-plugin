@@ -6,7 +6,7 @@ import type { TransferPayload } from "../services/transfer";
 
 const HOST_NAME = "de.sokrates1989.thunderbird_pdf_archiver";
 const PROTOCOL_VERSION = "1.0";
-const EXTENSION_COMPONENT_VERSION = "0.2.2";
+export const EXTENSION_COMPONENT_VERSION = "0.3.0";
 const RESPONSE_TIMEOUT_MILLISECONDS = 30_000;
 const COMMIT_TIMEOUT_MILLISECONDS = 600_000;
 const DIRECTORY_PICKER_TIMEOUT_MILLISECONDS = 600_000;
@@ -29,7 +29,21 @@ export interface NativeCapabilities {
   readonly libreOfficeAvailable: boolean;
 }
 
+export interface NativeDiagnostics {
+  readonly auditLogAvailable: boolean;
+  readonly chromiumAvailable: boolean;
+  readonly extensionVersion: string;
+  readonly hostVersion: string;
+  readonly libreOfficeAvailable: boolean;
+  readonly outputDirectoryStatus: "not_configured" | "not_writable" | "writable";
+  readonly packaged: boolean;
+  readonly platform: "other" | "windows";
+  readonly protocolVersion: string;
+}
+
 interface NativeResponse {
+  readonly auditLogAvailable?: boolean;
+  readonly chromiumAvailable?: boolean;
   readonly code?: string;
   readonly compatible?: boolean;
   readonly completed?: number;
@@ -41,8 +55,11 @@ interface NativeResponse {
   readonly message?: string;
   readonly libreOfficeAvailable?: boolean;
   readonly outputDirectory?: string;
+  readonly outputDirectoryStatus?: string;
   readonly outputPath?: string;
   readonly pageCount?: number;
+  readonly packaged?: boolean;
+  readonly platform?: string;
   readonly protocolVersion?: string;
   readonly stage?: string;
   readonly selected?: boolean;
@@ -162,7 +179,7 @@ function postAndWait(
   return response;
 }
 
-async function handshake(port: ThunderbirdNativePort, inbox: ResponseInbox): Promise<void> {
+async function handshake(port: ThunderbirdNativePort, inbox: ResponseInbox): Promise<NativeResponse> {
   const response = requireSuccess(
     await postAndWait(
       port,
@@ -178,6 +195,7 @@ async function handshake(port: ThunderbirdNativePort, inbox: ResponseInbox): Pro
   if (response.compatible !== true || response.protocolVersion !== PROTOCOL_VERSION) {
     throw new UserFacingError("incompatible_host", "The extension and native host versions are incompatible.");
   }
+  return response;
 }
 
 function connect(onProgress: (progress: ProgressUpdate) => void): {
@@ -230,6 +248,55 @@ export class NativeArchiveClient {
         ),
       );
       return { libreOfficeAvailable: response.libreOfficeAvailable === true };
+    } finally {
+      port.disconnect();
+    }
+  }
+
+  /** Build a path-free local support snapshot and verify the configured output folder. */
+  public async diagnostics(outputDirectory: string): Promise<NativeDiagnostics> {
+    const { inbox, port } = connect(() => undefined);
+    try {
+      await handshake(port, inbox);
+      if (outputDirectory.length > 0) {
+        await configure(port, inbox, outputDirectory);
+      }
+      const response = requireSuccess(
+        await postAndWait(
+          port,
+          inbox,
+          { protocolVersion: PROTOCOL_VERSION, type: "diagnostics" },
+          ["diagnostics"],
+        ),
+      );
+      const outputDirectoryStatus = response.outputDirectoryStatus;
+      const platform = response.platform;
+      if (
+        typeof response.auditLogAvailable !== "boolean" ||
+        typeof response.chromiumAvailable !== "boolean" ||
+        typeof response.hostVersion !== "string" ||
+        typeof response.libreOfficeAvailable !== "boolean" ||
+        typeof response.packaged !== "boolean" ||
+        typeof response.protocolVersion !== "string" ||
+        !["not_configured", "not_writable", "writable"].includes(outputDirectoryStatus ?? "") ||
+        !["other", "windows"].includes(platform ?? "")
+      ) {
+        throw new UserFacingError(
+          "invalid_diagnostics_response",
+          "The native host returned incomplete diagnostics.",
+        );
+      }
+      return {
+        auditLogAvailable: response.auditLogAvailable,
+        chromiumAvailable: response.chromiumAvailable,
+        extensionVersion: EXTENSION_COMPONENT_VERSION,
+        hostVersion: response.hostVersion,
+        libreOfficeAvailable: response.libreOfficeAvailable,
+        outputDirectoryStatus: outputDirectoryStatus as NativeDiagnostics["outputDirectoryStatus"],
+        packaged: response.packaged,
+        platform: platform as NativeDiagnostics["platform"],
+        protocolVersion: response.protocolVersion,
+      };
     } finally {
       port.disconnect();
     }

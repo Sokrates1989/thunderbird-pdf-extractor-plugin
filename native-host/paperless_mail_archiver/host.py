@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 from collections.abc import Callable, Mapping
@@ -12,6 +13,7 @@ from typing import cast
 from paperless_mail_archiver import __version__
 from paperless_mail_archiver.archive_service import ArchiveService
 from paperless_mail_archiver.attachment_support import detect_libreoffice
+from paperless_mail_archiver.diagnostics import RedactedAuditLog, create_default_audit_log
 from paperless_mail_archiver.errors import CancelledError, HostError
 from paperless_mail_archiver.models import ArchiveMetadata, ArchiveRequest, ImageMode
 from paperless_mail_archiver.output_store import (
@@ -19,6 +21,7 @@ from paperless_mail_archiver.output_store import (
     validate_output_directory,
 )
 from paperless_mail_archiver.protocol_io import MessageWriter, read_message
+from paperless_mail_archiver.renderers import detect_chromium
 from paperless_mail_archiver.transfer import MAX_CHUNKS, MAX_RAW_MESSAGE_BYTES, TransferManager
 from paperless_mail_archiver.validation import (
     MAX_FILE_NAME_LENGTH,
@@ -52,6 +55,7 @@ class NativeHost:
         archive_service: ArchiveService | None = None,
         folder_picker: FolderPicker = choose_output_directory,
         directory_opener: DirectoryOpener = open_output_directory,
+        audit_log: RedactedAuditLog | None = None,
     ) -> None:
         """Initialize isolated protocol, transfer, configuration, and worker state."""
         self._writer = writer
@@ -62,6 +66,7 @@ class NativeHost:
         self._libreoffice_available = libreoffice_executable is not None
         self._folder_picker = folder_picker
         self._directory_opener = directory_opener
+        self._audit_log = audit_log or RedactedAuditLog(None)
         self._transfers = TransferManager()
         self._output_directory: Path | None = None
         self._metadata: dict[str, ArchiveMetadata] = {}
@@ -73,6 +78,8 @@ class NativeHost:
         """Dispatch one validated request and emit a small response."""
         message_type = require_string(message, "type", maximum=32)
         require_protocol(message)
+        if message_type != "archive_chunk":
+            self._audit_log.record("protocol_request", message_type=message_type)
         if message_type == "hello":
             self._handle_hello(message)
         elif message_type == "configure":
@@ -81,6 +88,8 @@ class NativeHost:
             self._handle_connection_test()
         elif message_type == "capabilities":
             self._handle_capabilities()
+        elif message_type == "diagnostics":
+            self._handle_diagnostics()
         elif message_type == "choose_directory":
             self._handle_choose_directory(message)
         elif message_type == "open_output_directory":
@@ -106,6 +115,7 @@ class NativeHost:
             cancellation.set()
         for worker in workers:
             worker.join(timeout=5)
+        self._audit_log.record("host_shutdown", outcome="complete")
 
     def _handle_hello(self, message: Mapping[str, object]) -> None:
         """Return explicit compatible component and protocol versions."""
@@ -140,6 +150,32 @@ class NativeHost:
                 "type": "capabilities",
             }
         )
+
+    def _handle_diagnostics(self) -> None:
+        """Return a structured support snapshot without exposing user paths or message data."""
+        if self._output_directory is None:
+            output_status = "not_configured"
+        else:
+            try:
+                test_output_directory_writable(self._output_directory)
+            except HostError:
+                output_status = "not_writable"
+            else:
+                output_status = "writable"
+        self._writer.write(
+            {
+                "auditLogAvailable": self._audit_log.available,
+                "chromiumAvailable": detect_chromium() is not None,
+                "hostVersion": __version__,
+                "libreOfficeAvailable": self._libreoffice_available,
+                "outputDirectoryStatus": output_status,
+                "packaged": bool(getattr(sys, "frozen", False)),
+                "platform": "windows" if os.name == "nt" else "other",
+                "protocolVersion": PROTOCOL_VERSION,
+                "type": "diagnostics",
+            }
+        )
+        self._audit_log.record("diagnostics_created", outcome=output_status)
 
     def _handle_choose_directory(self, message: Mapping[str, object]) -> None:
         """Open the native folder picker and return either its selection or cancellation."""
@@ -204,6 +240,7 @@ class NativeHost:
             require_string(message, "sha256", maximum=64),
         )
         self._metadata[job_id] = metadata
+        self._audit_log.record("archive_transfer_started", outcome="accepted")
         self._writer.write(
             {"jobId": job_id, "protocolVersion": PROTOCOL_VERSION, "type": "archive_started"}
         )
@@ -257,6 +294,7 @@ class NativeHost:
         job_id = self._job_id(message)
         if self._transfers.cancel(job_id):
             self._metadata.pop(job_id, None)
+            self._audit_log.record("archive_cancelled", stage="transfer")
             self.write_error(CancelledError(), job_id=job_id)
             return
         with self._worker_lock:
@@ -264,6 +302,7 @@ class NativeHost:
         if cancellation is None:
             raise HostError("unknown_job", "The archive job is not active.")
         cancellation.set()
+        self._audit_log.record("archive_cancel_requested", stage="processing")
 
     def _run_archive(self, job_id: str, request: ArchiveRequest) -> None:
         """Run one archive worker and reduce all failures to redacted protocol errors."""
@@ -293,6 +332,7 @@ class NativeHost:
                     "type": "success",
                 }
             )
+            self._audit_log.record("archive_completed", outcome="success")
         except HostError as error:
             self.write_error(error, job_id=job_id)
         except Exception:
@@ -331,12 +371,16 @@ class NativeHost:
         if job_id is not None:
             response["jobId"] = job_id
         self._writer.write(response)
+        self._audit_log.record("protocol_error", code=error.code, outcome="error")
 
 
 def main() -> None:
     """Run the framed stdin/stdout host loop until Thunderbird closes the port."""
+    if sys.argv[1:] == ["--version"]:
+        sys.stdout.write(f"{__version__}\n")
+        return
     writer = MessageWriter(sys.stdout.buffer)
-    host = NativeHost(writer)
+    host = NativeHost(writer, audit_log=create_default_audit_log())
     try:
         while True:
             try:

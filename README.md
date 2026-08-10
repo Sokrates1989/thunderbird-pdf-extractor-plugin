@@ -6,7 +6,7 @@ attachments as one searchable PDF in an existing local folder. The source
 message is never moved, marked, or deleted, and there is no Paperless upload or
 credential storage.
 
-## Slice 2 scope
+## Release 0.3.0 scope
 
 The review popup shows every Thunderbird-detected item with filename, MIME type,
 size, support status, and selection state. Supported real attachments are
@@ -36,6 +36,11 @@ embedding with per-image placeholder fallback. A placeholder backed by a safe
 web source or enclosing web link remains clickable. Readable link labels are
 preserved without printing long tracking destinations beside them.
 
+Release 0.3.0 adds a redacted local diagnostic snapshot, a bounded rotating
+JSONL audit trail, artifact-version and SHA-256 checks during installation, and
+a portable Windows release ZIP. The diagnostic data never contains email
+content, filenames, URLs, attachment names, or local paths.
+
 ## Prerequisites
 
 - Windows 11;
@@ -49,19 +54,44 @@ preserved without printing long tracking destinations beside them.
 From PowerShell at the repository root:
 
 ```powershell
-.\installer\windows\build.ps1
-.\installer\windows\install.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\build.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\install.ps1
 ```
 
-Then install `artifacts\thunderbird-pdf-archiver-0.2.2.xpi` in Thunderbird via
+Then install `artifacts\thunderbird-pdf-archiver-0.3.0.xpi` in Thunderbird via
 Add-ons and Themes → Extensions → Install Add-on From File. Restart Thunderbird,
 open the extension settings, select an existing folder with **Browse**, and run
-**Test companion** before the first archive.
+**Run diagnostics** before the first archive.
 
-The installer writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.2.2` and
+The installer writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.3.0` and
 registers the native host under the current user at
 `HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archiver`.
 Administrator privileges are not required.
+
+The build also creates
+`artifacts\thunderbird-pdf-archiver-0.3.0-windows.zip`. A clean Windows user can
+extract this ZIP, run `installer\windows\install.ps1`, and install the included
+XPI without Node.js, Python, or administrator rights.
+
+## Update from an earlier slice
+
+Do not uninstall the old version first. Close Thunderbird, extract the new
+release, run
+`powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\install.ps1`,
+then install the new XPI over the existing add-on and restart Thunderbird. The
+fixed add-on ID lets Thunderbird
+treat this as an update, so the configured output folder, image mode, and
+separator preference remain in extension storage. The native-host registry
+entry is repointed to 0.3.0 after the copied executable passes its version and
+SHA-256 checks.
+
+## PDF links in browser viewers
+
+The exported PDF retains only safe `http`, `https`, and `mailto` URI actions.
+The PDF format has no standard new-tab flag for these URI actions, so the viewer
+controls normal-click behavior. Use **Ctrl+click** or the middle mouse button to
+open a link in a new browser tab. The extension deliberately does not add PDF
+JavaScript or `Launch` actions to force navigation.
 
 ## Development validation
 
@@ -84,7 +114,7 @@ python -m venv .venv
 
 See [architecture](docs/architecture.md), [security](docs/security.md),
 [protocol](docs/protocol.md), [testing](docs/testing.md), the
-[Slice 2 acceptance contract](docs/slice-2-acceptance.md), and
+[Slice 3 acceptance contract](docs/slice-3-acceptance.md), and
 [troubleshooting](docs/troubleshooting.md).
 
 ## Uninstall
@@ -92,7 +122,7 @@ See [architecture](docs/architecture.md), [security](docs/security.md),
 Remove the Thunderbird extension in Add-ons and Themes, then run:
 
 ```powershell
-.\installer\windows\uninstall.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\uninstall.ps1
 ```
 
 The script asks for confirmation before removing registered companion versions.

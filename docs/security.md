@@ -57,8 +57,13 @@ content are still validated as untrusted by the companion.
   LibreOffice profiles, conversion output, partial PDFs, and staging files live
   only in owned temporary directories and are removed on success, failure,
   cancellation, or port closure.
-- **Logging:** stdout contains framed protocol messages only. Errors are coded
-  and bounded. No body, MIME bytes, command output, token, or telemetry is logged.
+- **Logging:** stdout contains framed protocol messages only. The packaged host
+  keeps `host.jsonl` below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\logs`, capped at
+  512 KiB with two backups. Its schema accepts only timestamps, fixed event
+  tokens, error codes, message types, outcomes, and stages. It cannot accept
+  bodies, MIME bytes, filenames, URLs, attachment names, local paths, command
+  output, tokens, or arbitrary exception messages. Logging failure never blocks
+  archiving.
 
 There is no Paperless token or other credential. Thunderbird `storage.local`
 contains only the output directory, image mode, and separator-page preference.

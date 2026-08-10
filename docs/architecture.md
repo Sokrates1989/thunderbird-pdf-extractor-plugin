@@ -1,6 +1,6 @@
 # Architecture
 
-## Slice 2 decision
+## Release 0.3.0 decision
 
 The extension owns Thunderbird API access and the review UI. The native process
 owns filesystem access, EML parsing, conversion, PDF assembly, and Windows
@@ -66,6 +66,9 @@ are an optional persisted setting and default to off.
   the companion therefore owns folder selection and opening.
 - LibreOffice support is capability-gated. When absent, Office/ODF formats are
   disabled before transfer; the remaining converters do not depend on it.
+- The packaged host writes a bounded, rotating audit trail containing only
+  allow-listed event tokens. The settings page can request a path-free readiness
+  snapshot for version, renderer, converter, packaging, log, and output status.
 
 Primary references:
 
@@ -74,5 +77,7 @@ Primary references:
 - [MDN Native Messaging](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging)
 - [pypdf outlines](https://pypdf.readthedocs.io/en/stable/user/handling-outlines.html)
 - [pypdf PdfWriter](https://pypdf.readthedocs.io/en/stable/modules/PdfWriter.html)
+- [Adobe PDF action reference](https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/pdfmark_Actions.html)
+- [Chromium PDF link-click tests](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/chrome/browser/pdf/pdf_extension_test.cc)
 - [Pillow EXIF orientation](https://pillow.readthedocs.io/en/stable/reference/ImageOps.html)
 - [LibreOffice command-line conversion](https://help.libreoffice.org/latest/en-US/text/shared/guide/convertfilters.html)

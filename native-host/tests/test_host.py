@@ -1,12 +1,13 @@
 """Host-controller tests cover explicit component compatibility handshakes."""
 
 import io
+import sys
 from pathlib import Path
 
 import pytest
 
 from paperless_mail_archiver.errors import HostError
-from paperless_mail_archiver.host import NativeHost
+from paperless_mail_archiver.host import NativeHost, main
 from paperless_mail_archiver.protocol_io import MessageWriter, read_message
 
 
@@ -27,12 +28,24 @@ def _hello(component_version: str) -> dict[str, object]:
     return response
 
 
+def test_version_cli_reports_artifact_component_version(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Installers can reject a mismatched executable without speaking the binary protocol."""
+    monkeypatch.setattr(sys, "argv", ["native-host", "--version"])
+
+    main()
+
+    assert capsys.readouterr().out == "0.3.0\n"
+
+
 def test_matching_component_handshake_is_compatible() -> None:
     """The released extension and host versions explicitly agree."""
-    response = _hello("0.2.2")
+    response = _hello("0.3.0")
 
     assert response["compatible"] is True
-    assert response["hostVersion"] == "0.2.2"
+    assert response["hostVersion"] == "0.3.0"
 
 
 def test_different_component_handshake_is_incompatible() -> None:
@@ -54,6 +67,31 @@ def test_capabilities_reports_optional_office_converter_as_boolean() -> None:
     assert response is not None
     assert response["type"] == "capabilities"
     assert isinstance(response["libreOfficeAvailable"], bool)
+
+
+def test_diagnostics_are_structured_and_path_free(tmp_path: Path) -> None:
+    """The support snapshot reports readiness without returning the configured directory."""
+    stream = io.BytesIO()
+    host = NativeHost(MessageWriter(stream))
+    host.handle(
+        {
+            "outputDirectory": str(tmp_path),
+            "protocolVersion": "1.0",
+            "type": "configure",
+        }
+    )
+    host.handle({"protocolVersion": "1.0", "type": "diagnostics"})
+    stream.seek(0)
+    configured = read_message(stream)
+    response = read_message(stream)
+
+    assert configured is not None and configured["type"] == "configured"
+    assert response is not None and response["type"] == "diagnostics"
+    assert response["outputDirectoryStatus"] == "writable"
+    assert response["hostVersion"] == "0.3.0"
+    assert isinstance(response["chromiumAvailable"], bool)
+    assert isinstance(response["libreOfficeAvailable"], bool)
+    assert str(tmp_path) not in str(response)
 
 
 def test_choose_directory_returns_native_selection(tmp_path: Path) -> None:

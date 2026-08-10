@@ -32,13 +32,18 @@
       </label>
       <p class="hint" data-i18n="separatorPagesHint"></p>
       <div class="actions">
-        <button id="test-button" type="button" data-i18n="testConnectionButton"></button>
+        <button id="test-button" type="button" data-i18n="diagnosticsButton"></button>
         <button id="save-button" class="primary" type="button" data-i18n="saveButton"></button>
       </div>
       <p id="status" aria-live="polite"></p>
+      <section aria-labelledby="diagnostics-heading">
+        <h2 id="diagnostics-heading" data-i18n="diagnosticsHeading"></h2>
+        <p class="hint" data-i18n="diagnosticsHint"></p>
+        <pre id="diagnostics-output" class="hidden" aria-live="polite"></pre>
+      </section>
       <section>
-        <h2 data-i18n="sliceTwoScopeHeading"></h2>
-        <p data-i18n="sliceTwoScopeDescription"></p>
+        <h2 data-i18n="releaseScopeHeading"></h2>
+        <p data-i18n="releaseScopeDescription"></p>
       </section>
     </main>
     <script type="module" src="options.js"></script>

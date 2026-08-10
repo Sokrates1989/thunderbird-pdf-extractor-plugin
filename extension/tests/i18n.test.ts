@@ -36,4 +36,25 @@ describe("extension locales", () => {
       expect(english).toHaveProperty(placeholder ?? "");
     }
   });
+
+  it("resolves every localized page key in both locales", async () => {
+    const pagePaths = [
+      path.resolve(import.meta.dirname, "..", "pages", "options", "options.html"),
+      path.resolve(import.meta.dirname, "..", "pages", "popup", "popup.html"),
+    ];
+    const pages = await Promise.all(pagePaths.map(async (pagePath) => readFile(pagePath, "utf-8")));
+    const keys = pages.flatMap((page) =>
+      [...page.matchAll(/data-i18n(?:-placeholder)?="([A-Za-z0-9_]+)"/gu)].map(
+        (match) => match[1],
+      ),
+    );
+    const [german, english] = await Promise.all([readLocale("de"), readLocale("en")]);
+
+    expect(keys.length).toBeGreaterThan(0);
+    for (const key of keys) {
+      expect(key).toBeDefined();
+      expect(german).toHaveProperty(key ?? "");
+      expect(english).toHaveProperty(key ?? "");
+    }
+  });
 });

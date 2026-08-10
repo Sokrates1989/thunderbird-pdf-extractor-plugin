@@ -1,4 +1,4 @@
-# Testing Slice 2
+# Testing release 0.3.0
 
 ## Automated gates
 
@@ -22,7 +22,8 @@ The native suite verifies ordered PDF/image/CSV merging, source PDF text and
 page geometry, safe URI-link normalization, active-action removal, metadata,
 outlines, nested EML
 children, encrypted-PDF failure, unsupported ZIP disclosure, MIME traversal,
-cleanup, and protocol validation. When Chromium exists, a local HTTP canary
+cleanup, protocol validation, redacted diagnostic logging, and path-free
+readiness reporting. When Chromium exists, a local HTTP canary
 proves remote email images are not requested while a CID fixture proves verified
 image data can be printed.
 
@@ -30,12 +31,31 @@ The representative merged fixture must also be rendered to PNG with Poppler and
 all pages inspected after PDF-affecting changes. Automated service tests do not
 replace a real Thunderbird run.
 
-## Slice 2 acceptance walkthrough
+## Release build gates
+
+From the repository root, run:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\build.ps1 -SkipDependencyInstall
+& .\artifacts\native-host\thunderbird-pdf-archiver-host.exe --version
+powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\install.ps1 -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\uninstall.ps1 -WhatIf
+```
+
+The version command must print `0.3.0`. Inspect
+`artifacts\thunderbird-pdf-archiver-0.3.0-windows.zip` and confirm it contains the
+0.3.0 XPI, native executable, install/uninstall scripts, notices, and Slice 3
+operator documents. Parse every PowerShell script before release.
+
+## Slice 2 workflow regression walkthrough
 
 Test separately on Thunderbird 128 ESR, the current ESR, and current release:
 
-1. Build/install both `0.2.2` artifacts and restart Thunderbird.
-2. Choose a new empty folder with **Durchsuchen …** and test the companion.
+1. Build/install both `0.3.0` artifacts and restart Thunderbird.
+2. Choose a new empty folder with **Durchsuchen …** and run diagnostics. Confirm
+   matching component versions, standalone Windows runtime, available audit log,
+   renderer/converter status, and a writable output folder without any path in
+   the report.
 3. Open one email containing, in a known order: PDF, PNG/JPEG/WebP/BMP/TIFF,
    TXT, CSV, HTML, nested EML, ZIP, and an inline signature/logo.
 4. Confirm each row shows filename, MIME type, size, support, and checkbox.
@@ -54,7 +74,9 @@ Test separately on Thunderbird 128 ESR, the current ESR, and current release:
 9. In an HTML newsletter, confirm readable link labels are clickable without a
    printed tracking URL. With placeholder mode selected, confirm a web-backed
    image placeholder is clickable and the viewer exposes the real destination
-   before or during navigation according to its own security settings.
+   before or during navigation according to its own security settings. Confirm
+   Ctrl+click and middle-click open a new browser tab; record normal-click
+   behavior separately because the PDF viewer controls it.
 10. Enable separator pages, repeat, and verify one separator before every
    attachment section while order/outlines remain correct.
 11. With no LibreOffice installed, confirm Office/ODF files are disabled with an
@@ -67,6 +89,9 @@ Test separately on Thunderbird 128 ESR, the current ESR, and current release:
 14. Save twice with the same title and confirm collision numbering.
 15. Try multiple selected messages and confirm the extension refuses to choose
     one silently.
+
+Then execute the clean-user, update, uninstall, and Paperless checks in the
+[Slice 3 acceptance contract](slice-3-acceptance.md).
 
 Record exact Thunderbird, Windows, Chromium, and LibreOffice versions. Do not
 claim this manual matrix until it has actually been performed.

@@ -62,6 +62,21 @@ select {
   color: color-mix(in srgb, CanvasText 70%, transparent);
 }
 
+.hidden {
+  display: none;
+}
+
+pre {
+  background: color-mix(in srgb, CanvasText 6%, transparent);
+  border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
+  border-radius: 4px;
+  line-height: 1.5;
+  margin-block: 10px 0;
+  overflow-wrap: anywhere;
+  padding: 12px;
+  white-space: pre-wrap;
+}
+
 .actions {
   display: flex;
   gap: 8px;

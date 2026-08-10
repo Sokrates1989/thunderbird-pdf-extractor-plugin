@@ -1,6 +1,6 @@
 # Native Messaging protocol 1.0
 
-Extension and host component version `0.2.2` must match exactly. Messages are
+Extension and host component version `0.3.0` must match exactly. Messages are
 compact UTF-8 JSON objects framed with Mozilla's four-byte little-endian length
 prefix. Frames are limited to 1 MiB and every message includes
 `protocolVersion: "1.0"`.
@@ -9,6 +9,8 @@ prefix. Frames are limited to 1 MiB and every message includes
 
 1. `hello` exchanges component/protocol versions and `compatible`.
 2. `capabilities` returns `libreOfficeAvailable`; it exposes no local paths.
+   Optional `diagnostics` returns component/readiness booleans and a redacted
+   output-folder status, never the configured path, filenames, URLs, or mail data.
 3. Optional `choose_directory` passes a bounded title and optional initial path.
    `directory_selected` returns either `selected: false` or the absolute path.
 4. `configure` validates an existing absolute `outputDirectory`.

@@ -12,13 +12,29 @@ HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archi
 The manifest `path` must point to `thunderbird-pdf-archiver-host.exe`, and
 `allowed_extensions` must contain
 `thunderbird-pdf-archiver@sokrates1989.de`. Extension and host must both be
-version `0.2.2`; an older companion is intentionally incompatible.
+version `0.3.0`; an older companion is intentionally incompatible.
 
 ## Output directory error
 
 Use **Browse / Durchsuchen …** to choose an existing directory. Confirm the
-current Windows user can create files there and run **Test companion**. The
-companion deliberately does not create a manually typed directory.
+current Windows user can create files there, then run **Run diagnostics /
+Diagnose ausführen**. The companion deliberately does not create a manually
+typed directory.
+
+## Collect redacted diagnostics
+
+Open the extension settings and select **Run diagnostics / Diagnose ausführen**.
+The displayed snapshot contains versions and readiness states only. The rotating
+native log is stored at
+`%LOCALAPPDATA%\ThunderbirdPdfArchiver\logs\host.jsonl`; it contains no mail
+content, filenames, URLs, attachment names, or local paths.
+
+## A PDF link replaces the current tab
+
+Use **Ctrl+click** or the middle mouse button in the browser PDF viewer. Safe PDF
+web links are URI actions, and that action type has no standard new-window flag.
+The viewer therefore owns ordinary-click behavior. The archive does not use
+JavaScript, `Launch`, or other active PDF actions to override it.
 
 ## An email-body image is a placeholder
 

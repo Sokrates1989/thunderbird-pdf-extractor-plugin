@@ -6,7 +6,7 @@ Installs and registers the versioned native companion for the current user.
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
-    [string]$Version = '0.2.2',
+    [string]$Version = '0.3.0',
 
     [string]$ArtifactDirectory = ''
 )
@@ -23,6 +23,10 @@ if ([string]::IsNullOrWhiteSpace($ArtifactDirectory)) {
 $sourceExecutable = Join-Path $ArtifactDirectory 'thunderbird-pdf-archiver-host.exe'
 if (-not (Test-Path -LiteralPath $sourceExecutable -PathType Leaf)) {
     throw "Native-host artifact not found at '$sourceExecutable'. Run build.ps1 first."
+}
+$artifactVersion = (& $sourceExecutable '--version').Trim()
+if ($LASTEXITCODE -ne 0 -or $artifactVersion -ne $Version) {
+    throw "Native-host artifact version '$artifactVersion' does not match requested version '$Version'."
 }
 if ([string]::IsNullOrWhiteSpace($env:LOCALAPPDATA)) {
     throw 'LOCALAPPDATA is unavailable; the per-user install directory cannot be resolved.'
@@ -46,6 +50,11 @@ try {
     if ($PSCmdlet.ShouldProcess($installDirectory, 'Install versioned native companion')) {
         New-Item -ItemType Directory -Path $installDirectory -Force | Out-Null
         Copy-Item -LiteralPath $sourceExecutable -Destination $installedExecutable -Force
+        $sourceHash = (Get-FileHash -LiteralPath $sourceExecutable -Algorithm SHA256).Hash
+        $installedHash = (Get-FileHash -LiteralPath $installedExecutable -Algorithm SHA256).Hash
+        if ($sourceHash -ne $installedHash) {
+            throw 'The installed native-host executable failed SHA-256 verification.'
+        }
         $manifest = [ordered]@{
             name = $hostName
             description = 'Local searchable email and attachment PDF companion for Thunderbird.'

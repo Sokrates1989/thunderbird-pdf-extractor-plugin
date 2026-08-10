@@ -83,4 +83,5 @@ def test_assembler_preserves_only_normalized_uri_link_actions(tmp_path: Path) ->
     assert str(action["/S"]) == "/URI"
     assert str(action["/URI"]) == "https://example.test/active-link"
     assert "/JS" not in annotation
+    assert "/NewWindow" not in action
     assert "/Next" not in action

@@ -1,7 +1,7 @@
 /** Settings page for the non-secret local output preference and host diagnostics. */
 
 import { errorMessage } from "../domain/errors";
-import { NativeArchiveClient } from "../protocol/native-client";
+import { NativeArchiveClient, type NativeDiagnostics } from "../protocol/native-client";
 import { isImageMode, loadSettings, saveSettings } from "../services/settings";
 import { localizeDocument, message, requiredElement } from "./i18n";
 
@@ -12,6 +12,7 @@ const browseButton = requiredElement("browse-button", HTMLButtonElement);
 const testButton = requiredElement("test-button", HTMLButtonElement);
 const saveButton = requiredElement("save-button", HTMLButtonElement);
 const status = requiredElement("status", HTMLElement);
+const diagnosticsOutput = requiredElement("diagnostics-output", HTMLPreElement);
 
 function directoryValue(): string {
   return outputDirectoryInput.value.trim();
@@ -62,20 +63,40 @@ async function browseForDirectory(): Promise<void> {
 
 async function testConnection(): Promise<void> {
   const outputDirectory = directoryValue();
-  if (outputDirectory.length === 0) {
-    status.textContent = message("directoryNotConfigured");
-    return;
-  }
   testButton.disabled = true;
   status.textContent = message("connectionTesting");
+  diagnosticsOutput.classList.add("hidden");
   try {
-    await new NativeArchiveClient().checkConnection(outputDirectory);
-    status.textContent = message("connectionSuccess");
+    const diagnostics = await new NativeArchiveClient().diagnostics(outputDirectory);
+    renderDiagnostics(diagnostics);
+    status.textContent = message("diagnosticsCompleted");
   } catch (error: unknown) {
     status.textContent = message("connectionFailure", errorMessage(error));
   } finally {
     testButton.disabled = false;
   }
+}
+
+/** Present only bounded readiness values that are safe to copy into a support request. */
+function renderDiagnostics(diagnostics: NativeDiagnostics): void {
+  const yesNo = (value: boolean): string => message(value ? "diagnosticYes" : "diagnosticNo");
+  const outputStatusKey = {
+    not_configured: "diagnosticOutputNotConfigured",
+    not_writable: "diagnosticOutputNotWritable",
+    writable: "diagnosticOutputWritable",
+  }[diagnostics.outputDirectoryStatus];
+  diagnosticsOutput.textContent = [
+    message("diagnosticExtensionVersion", diagnostics.extensionVersion),
+    message("diagnosticHostVersion", diagnostics.hostVersion),
+    message("diagnosticProtocolVersion", diagnostics.protocolVersion),
+    message("diagnosticWindows", yesNo(diagnostics.platform === "windows")),
+    message("diagnosticPackaged", yesNo(diagnostics.packaged)),
+    message("diagnosticChromium", yesNo(diagnostics.chromiumAvailable)),
+    message("diagnosticLibreOffice", yesNo(diagnostics.libreOfficeAvailable)),
+    message("diagnosticAuditLog", yesNo(diagnostics.auditLogAvailable)),
+    message("diagnosticOutput", message(outputStatusKey)),
+  ].join("\n");
+  diagnosticsOutput.classList.remove("hidden");
 }
 
 saveButton.addEventListener("click", () => {
