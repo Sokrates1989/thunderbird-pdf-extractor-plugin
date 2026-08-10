@@ -49,22 +49,49 @@ content, filenames, URLs, attachment names, or local paths.
 - Python 3.12 for development only; the packaged host is a standalone `.exe`;
 - optional LibreOffice for Office/ODF attachment conversion.
 
-## Build and install
+## Install on Windows
+
+Download and run
+`Thunderbird-PDF-Archiver-Setup-0.3.0-win-x64.exe`. The per-user setup requires
+no administrator privileges. It installs the native companion, registers it for
+32- and 64-bit Thunderbird, and installs or updates the XPI in every existing
+Thunderbird profile. New profiles can discover the same registered XPI.
+
+If Thunderbird is running, setup asks for confirmation, requests a normal
+shutdown, waits for open-draft prompts, and starts Thunderbird again when setup
+finishes. It never force-terminates Thunderbird. On a first installation,
+Thunderbird may show one final security prompt to enable the side-loaded add-on.
+After accepting it, open the add-on settings, choose an existing output folder,
+and run **Run diagnostics**.
+
+Run a newer setup directly over the installed version; do not uninstall first.
+To remove the product, use Windows **Installed apps**. Exported PDFs are never
+removed.
+
+The current test setup is not Authenticode-signed, so Windows SmartScreen may
+show an unknown-publisher warning. Verify its published SHA-256 before running
+it. A public release should be code-signed.
+
+## Build
 
 From PowerShell at the repository root:
 
 ```powershell
+winget install --id JRSoftware.InnoSetup --exact
 powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\build.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\install.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\test-setup.ps1
 ```
 
-Then install `artifacts\thunderbird-pdf-archiver-0.3.0.xpi` in Thunderbird via
-Add-ons and Themes → Extensions → Install Add-on From File. Restart Thunderbird,
-open the extension settings, select an existing folder with **Browse**, and run
-**Run diagnostics** before the first archive.
+The build creates the primary setup at
+`artifacts\Thunderbird-PDF-Archiver-Setup-0.3.0-win-x64.exe`. The isolated setup
+test uses private LocalAppData and registry targets and removes them again. It
+does not access a real Thunderbird profile.
 
-The installer writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.3.0` and
-registers the native host under the current user at
+The legacy PowerShell installer and standalone XPI remain available for
+development diagnostics. They are no longer the recommended user workflow.
+
+Setup writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.3.0` and registers
+the native host under the current user at
 `HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archiver`.
 Administrator privileges are not required.
 
@@ -75,15 +102,10 @@ XPI without Node.js, Python, or administrator rights.
 
 ## Update from an earlier slice
 
-Do not uninstall the old version first. Close Thunderbird, extract the new
-release, run
-`powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\install.ps1`,
-then install the new XPI over the existing add-on and restart Thunderbird. The
-fixed add-on ID lets Thunderbird
-treat this as an update, so the configured output folder, image mode, and
-separator preference remain in extension storage. The native-host registry
-entry is repointed to 0.3.0 after the copied executable passes its version and
-SHA-256 checks.
+Do not uninstall the old version first. Run the setup EXE. It closes Thunderbird
+safely, updates an existing profile XPI in place, installs the registered XPI for
+new profiles, and starts Thunderbird again. The fixed add-on ID preserves the
+configured output folder, image mode, and separator preference.
 
 ## PDF links in browser viewers
 
@@ -119,7 +141,10 @@ See [architecture](docs/architecture.md), [security](docs/security.md),
 
 ## Uninstall
 
-Remove the Thunderbird extension in Add-ons and Themes, then run:
+The recommended setup registers an entry under Windows **Installed apps**. Its
+uninstaller removes the registered XPI, profile XPI copies, native companion,
+manifest, and audit logs. The legacy development installation can still be
+removed with:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\uninstall.ps1

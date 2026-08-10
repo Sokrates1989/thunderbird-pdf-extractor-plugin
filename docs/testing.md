@@ -38,14 +38,19 @@ From the repository root, run:
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\build.ps1 -SkipDependencyInstall
 & .\artifacts\native-host\thunderbird-pdf-archiver-host.exe --version
+powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\test-setup.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\install.ps1 -WhatIf
 powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\uninstall.ps1 -WhatIf
 ```
 
-The version command must print `0.3.0`. Inspect
+The version command must print `0.3.0`. The isolated setup test must complete an
+install, existing-profile update, registry check, and uninstall without touching
+real Thunderbird state. Inspect
 `artifacts\thunderbird-pdf-archiver-0.3.0-windows.zip` and confirm it contains the
-0.3.0 XPI, native executable, install/uninstall scripts, notices, and Slice 3
-operator documents. Parse every PowerShell script before release.
+one-click setup, 0.3.0 XPI, native executable, legacy install/uninstall scripts,
+notices, and Slice 3 operator documents. Parse every PowerShell script and
+compile both release and test-mode Inno Setup sources before release. See the
+[Windows installer test](windows-installer-testing.md) for the manual gate.
 
 ## Slice 2 workflow regression walkthrough
 

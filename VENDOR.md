@@ -17,6 +17,11 @@ The standalone Windows executable is produced by PyInstaller 6.22.0. PyInstaller
 is build tooling under GPL-2.0-or-later with its exception; it does not impose the
 GPL on the bundled application.
 
+The Windows setup executable is produced by Inno Setup 6.7.3. Inno Setup is
+copyright Jordan Russell and contributors and is used under its `LICENSE.TXT`
+terms. The tested build is non-commercial; commercial builds must review Inno
+Setup's current licensing terms before invoking the compiler.
+
 ## Extension development dependencies
 
 The extension ships bundled first-party JavaScript and static assets. TypeScript,

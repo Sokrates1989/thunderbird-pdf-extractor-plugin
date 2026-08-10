@@ -38,19 +38,48 @@ JSONL-Protokoll, Versions- und SHA-256-Prüfungen bei der Installation sowie ein
 portables Windows-Release-ZIP. Diagnose und Protokoll enthalten keine
 E-Mail-Inhalte, Dateinamen, URLs, Anhangsnamen oder lokalen Pfade.
 
-## Bauen und installieren
+## Unter Windows installieren
+
+Lade `Thunderbird-PDF-Archiver-Setup-0.3.0-win-x64.exe` herunter und starte die
+Datei. Der benutzerbezogene Installer benötigt keine Administratorrechte. Er
+installiert den nativen Begleiter, registriert ihn für 32- und 64-Bit-Thunderbird
+und installiert oder aktualisiert die XPI in allen vorhandenen Thunderbird-
+Profilen. Auch neue Profile können die registrierte XPI erkennen.
+
+Läuft Thunderbird noch, bittet der Installer um Zustimmung, fordert ein normales
+Beenden an, wartet auf mögliche Rückfragen zu offenen Entwürfen und startet
+Thunderbird nach der Installation wieder. Thunderbird wird niemals erzwungen
+beendet. Bei der ersten Installation kann Thunderbird abschließend einmal um
+Bestätigung des seitlich installierten Add-ons bitten. Öffne danach die
+Add-on-Einstellungen, wähle den Zielordner und führe die Diagnose aus.
+
+Für ein Update wird die neuere Setup-Datei direkt ausgeführt; vorheriges
+Deinstallieren ist nicht nötig. Zum Entfernen dient Windows **Installierte Apps**.
+Bereits erzeugte PDF-Dateien werden nicht gelöscht.
+
+Der aktuelle Test-Installer ist noch nicht mit Authenticode signiert. Windows
+SmartScreen kann deshalb vor einem unbekannten Herausgeber warnen. Vor dem Start
+sollte die veröffentlichte SHA-256-Prüfsumme verglichen werden; ein öffentliches
+Release sollte codesigniert werden.
+
+## Bauen
 
 ```powershell
+winget install --id JRSoftware.InnoSetup --exact
 powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\build.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\install.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\test-setup.ps1
 ```
 
-Danach `artifacts\thunderbird-pdf-archiver-0.3.0.xpi` über Thunderbird → Add-ons
-und Themes → Erweiterungen → Add-on aus Datei installieren einspielen.
-Thunderbird neu starten, in den Einstellungen einen vorhandenen Zielordner über
-**Durchsuchen …** auswählen und **Diagnose ausführen** wählen.
+Der Build erzeugt die primäre Installationsdatei unter
+`artifacts\Thunderbird-PDF-Archiver-Setup-0.3.0-win-x64.exe`. Der isolierte
+Setup-Test verwendet ausschließlich eigene LocalAppData- und Registry-Ziele und
+entfernt sie anschließend wieder. Ein echtes Thunderbird-Profil wird nicht
+berührt.
 
-Die Installation erfolgt ohne Administratorrechte unter
+Der ältere PowerShell-Installer und die einzelne XPI bleiben für die technische
+Fehlersuche erhalten, sind aber nicht mehr der empfohlene Installationsweg.
+
+Setup installiert ohne Administratorrechte unter
 `%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.3.0`. LibreOffice ist nur für die
 Office-/ODF-Konvertierung erforderlich.
 
@@ -61,14 +90,11 @@ XPI installieren; Node.js, Python und Administratorrechte werden nicht benötigt
 
 ## Update von einer älteren Slice-Version
 
-Die alte Version vorher nicht deinstallieren. Thunderbird schließen, das neue
-Release entpacken,
-`powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\install.ps1`
-ausführen, anschließend die neue XPI über das vorhandene Add-on installieren
-und Thunderbird neu starten.
-Durch die feste Add-on-ID bleiben Zielordner, Bildmodus und Trennseiten-Einstellung
-erhalten. Der Registry-Eintrag wird erst nach erfolgreicher Versions- und
-SHA-256-Prüfung auf den Begleiter 0.3.0 umgestellt.
+Die alte Version vorher nicht deinstallieren. Führe direkt die Setup-EXE aus. Sie
+beendet Thunderbird kontrolliert, aktualisiert eine vorhandene Profil-XPI,
+registriert die XPI für neue Profile und startet Thunderbird wieder. Durch die
+feste Add-on-ID bleiben Zielordner, Bildmodus und Trennseiten-Einstellung
+erhalten.
 
 ## PDF-Links im Browser
 
@@ -78,8 +104,10 @@ Für diese Aktionen besitzt das PDF-Format keinen standardisierten Schalter
 oder der mittleren Maustaste öffnet der Browser den Link in einem neuen Tab. Die
 Erweiterung fügt dafür bewusst weder PDF-JavaScript noch `Launch`-Aktionen ein.
 
-Zum Entfernen zuerst die Erweiterung in Thunderbird löschen und anschließend
-ausführen:
+Der empfohlene Installer legt einen Eintrag unter Windows **Installierte Apps**
+an. Seine Deinstallation entfernt registrierte und profilbezogene XPI-Dateien,
+den nativen Begleiter, das Manifest und Diagnoseprotokolle. Die ältere
+Entwicklungsinstallation kann weiterhin entfernt werden mit:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\uninstall.ps1

@@ -67,3 +67,21 @@ content are still validated as untrusted by the companion.
 
 There is no Paperless token or other credential. Thunderbird `storage.local`
 contains only the output directory, image mode, and separator-page preference.
+
+## Windows setup boundary
+
+The one-click setup runs without elevation and writes only below its owned
+`%LOCALAPPDATA%\ThunderbirdPdfArchiver` root, the exact native-messaging registry
+key, the exact Thunderbird extension registry value, and the exact fixed-ID XPI
+file in existing profile `extensions` directories. It does not modify mail,
+account, preference, or address-book files. Uninstall reverses those entries and
+leaves exported PDFs untouched.
+
+If Thunderbird is running, setup uses `CloseMainWindow()` and waits up to 60
+seconds. It never calls forced process termination, so Thunderbird can protect
+unsaved compose drafts. The automated installer test replaces all production
+paths and registry keys with isolated test-owned targets.
+
+The current setup artifact is not Authenticode-signed. SHA-256 verification is
+therefore required for testing, and a public release should add code signing to
+avoid an unverifiable publisher experience.

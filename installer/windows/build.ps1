@@ -101,6 +101,8 @@ try {
         Pop-Location
     }
 
+    & (Join-Path $PSScriptRoot 'build-setup.ps1') -Version $version
+
     if (Test-Path -LiteralPath $releaseDirectory) {
         Remove-Item -LiteralPath $releaseDirectory -Recurse -Force
     }
@@ -122,10 +124,19 @@ try {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'uninstall.ps1') -Destination (
         Join-Path $releaseDirectory 'installer\windows'
     )
+    Copy-Item -LiteralPath (
+        Join-Path $artifactRoot "Thunderbird-PDF-Archiver-Setup-$version-win-x64.exe"
+    ) -Destination $releaseDirectory
     foreach ($fileName in @('README.md', 'README.de.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md')) {
         Copy-Item -LiteralPath (Join-Path $repositoryRoot $fileName) -Destination $releaseDirectory
     }
-    foreach ($fileName in @('testing.md', 'troubleshooting.md', 'security.md', 'slice-3-acceptance.md')) {
+    foreach ($fileName in @(
+            'testing.md',
+            'troubleshooting.md',
+            'security.md',
+            'slice-3-acceptance.md',
+            'windows-installer-testing.md'
+        )) {
         Copy-Item -LiteralPath (Join-Path $repositoryRoot "docs\$fileName") -Destination (
             Join-Path $releaseDirectory 'docs'
         )
@@ -138,6 +149,9 @@ try {
     Write-Host "XPI: $(Join-Path $artifactRoot $xpiName)"
     Write-Host "Native host: $(Join-Path $nativeArtifactRoot 'thunderbird-pdf-archiver-host.exe')"
     Write-Host "Windows release: $releaseArchive"
+    Write-Host "Windows setup: $(
+        Join-Path $artifactRoot "Thunderbird-PDF-Archiver-Setup-$version-win-x64.exe"
+    )"
 }
 catch {
     Write-Error "Build failed: $($_.Exception.Message)"

@@ -69,6 +69,12 @@ are an optional persisted setting and default to off.
 - The packaged host writes a bounded, rotating audit trail containing only
   allow-listed event tokens. The settings page can request a path-free readiness
   snapshot for version, renderer, converter, packaging, log, and output status.
+- The per-user Windows setup registers both native-host registry views and the
+  fixed XPI ID. It also updates the exact XPI file in existing Thunderbird
+  profiles so a prior manual installation cannot shadow a newer setup version.
+  Thunderbird remains responsible for first-install activation and permission
+  confirmation. Setup only requests a normal Thunderbird shutdown and never
+  force-terminates the process.
 
 Primary references:
 
@@ -81,3 +87,5 @@ Primary references:
 - [Chromium PDF link-click tests](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/chrome/browser/pdf/pdf_extension_test.cc)
 - [Pillow EXIF orientation](https://pillow.readthedocs.io/en/stable/reference/ImageOps.html)
 - [LibreOffice command-line conversion](https://help.libreoffice.org/latest/en-US/text/shared/guide/convertfilters.html)
+- [Mozilla XPI registry install location](https://searchfox.org/mozilla-central/source/toolkit/mozapps/extensions/internal/XPIProvider.sys.mjs)
+- [Inno Setup documentation](https://jrsoftware.org/ishelp/contents.htm)

@@ -14,6 +14,22 @@ The manifest `path` must point to `thunderbird-pdf-archiver-host.exe`, and
 `thunderbird-pdf-archiver@sokrates1989.de`. Extension and host must both be
 version `0.3.0`; an older companion is intentionally incompatible.
 
+For the recommended installation, rerun
+`Thunderbird-PDF-Archiver-Setup-0.3.0-win-x64.exe`. It repairs the profile XPI,
+both 32-/64-bit native-host registrations, and the installed manifest together.
+
+## Setup cannot close Thunderbird
+
+Setup never force-terminates Thunderbird. Save or discard every open compose
+draft, close remaining Thunderbird windows, and rerun setup. If background
+processes remain, end Thunderbird normally from its menu before trying again.
+
+## Windows warns about an unknown publisher
+
+The current test installer is not Authenticode-signed. Compare the downloaded
+file's SHA-256 with the checksum published on the GitHub release. Do not bypass
+the warning if the checksum differs. Public releases should be code-signed.
+
 ## Output directory error
 
 Use **Browse / Durchsuchen …** to choose an existing directory. Confirm the

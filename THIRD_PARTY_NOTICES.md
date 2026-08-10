@@ -8,6 +8,8 @@ This project uses the following principal open-source projects:
 - charset-normalizer, copyright Ahmed TAHRI, MIT License;
 - PyInstaller, copyright its contributors, GPL-2.0-or-later with the PyInstaller
   exception; and
+- Inno Setup, copyright Jordan Russell, Martijn Laan, and contributors, under
+  the Inno Setup `LICENSE.TXT` terms; and
 - development tooling listed in `extension/package-lock.json` and
   `native-host/requirements.lock`, under each package's respective license.
 

@@ -11,6 +11,8 @@ Thunderbird matrix below has been recorded.
   repointing the per-user native-host registry entry;
 - the portable release ZIP contains the XPI, executable, install/uninstall
   scripts, notices, and operator documentation;
+- the one-click Windows setup installs/updates the host and XPI per user,
+  requests a safe Thunderbird restart, and is reversible through Installed Apps;
 - updates reuse the fixed add-on ID and preserve extension settings;
 - uninstall removes the registry entry, installed host versions, and diagnostic
   logs while leaving every exported PDF untouched;
@@ -26,7 +28,8 @@ Thunderbird matrix below has been recorded.
 
 Run the commands in [testing.md](testing.md), build the release ZIP, inspect its
 contents, execute the packaged host `--version` check, parse the PowerShell
-scripts, and run installer/uninstaller `-WhatIf` smoke tests. A representative
+scripts, execute the isolated [Windows setup test](windows-installer-testing.md),
+and run legacy installer/uninstaller `-WhatIf` smoke tests. A representative
 merged PDF must be rendered with Poppler and every page inspected after any
 PDF-affecting change.
 
