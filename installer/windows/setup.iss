@@ -1,7 +1,7 @@
 ; Builds the per-user Windows setup around the already verified XPI and native-host artifacts.
 
 #ifndef AppVersion
-  #define AppVersion "0.4.0"
+  #define AppVersion "0.5.0"
 #endif
 
 #define AppName "Thunderbird PDF Archiver"

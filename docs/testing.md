@@ -1,4 +1,4 @@
-# Testing release 0.4.0
+# Testing release 0.5.0
 
 ## Automated gates
 
@@ -43,11 +43,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\install.
 powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\uninstall.ps1 -WhatIf
 ```
 
-The version command must print `0.4.0`. The isolated setup test must complete an
+The version command must print `0.5.0`. The isolated setup test must complete an
 install, existing-profile update, registry check, and uninstall without touching
 real Thunderbird state. Inspect
-`artifacts\thunderbird-pdf-archiver-0.4.0-windows.zip` and confirm it contains the
-one-click setup, 0.4.0 XPI, native executable, legacy install/uninstall scripts,
+`artifacts\thunderbird-pdf-archiver-0.5.0-windows.zip` and confirm it contains the
+one-click setup, 0.5.0 XPI, native executable, legacy install/uninstall scripts,
 notices, and Slice 3 operator documents. Parse every PowerShell script and
 compile both release and test-mode Inno Setup sources before release. See the
 [Windows installer test](windows-installer-testing.md) for the manual gate.
@@ -61,7 +61,7 @@ Test separately on Thunderbird 128 ESR, the current ESR, and current release:
    settings, switch to the other language and confirm the settings page, archive
    popup, context menu, progress, success, and error messages all change without
    untranslated fallback text.
-2. Build/install both `0.4.0` artifacts and restart Thunderbird.
+2. Build/install both `0.5.0` artifacts and restart Thunderbird.
 3. Choose a new empty folder with **Durchsuchen …** and run diagnostics. Confirm
    matching component versions, standalone Windows runtime, available audit log,
    renderer/converter status, and a writable output folder without any path in
@@ -99,6 +99,11 @@ Test separately on Thunderbird 128 ESR, the current ESR, and current release:
 15. Save twice with the same title and confirm collision numbering.
 16. Try multiple selected messages and confirm the extension refuses to choose
     one silently.
+17. Install Thunderbird AI Assistant 2.9.0, click **Export as PDF** for one
+    dashboard message, and confirm this review window opens with exactly that
+    message. Disable PDF Archiver and confirm the AI Assistant offers its GitHub
+    installation page instead. A request from any other extension ID must not
+    open a review window.
 
 Then execute the clean-user, update, uninstall, and Paperless checks in the
 [Slice 3 acceptance contract](slice-3-acceptance.md).

@@ -93,5 +93,5 @@
   "technicalErrorWithCode": { "message": "Ein technischer Fehler ist aufgetreten (Code: $1)." },
   "technicalErrorGeneric": { "message": "Ein unerwarteter technischer Fehler ist aufgetreten." },
   "releaseScopeHeading": { "message": "Release-Umfang" },
-  "releaseScopeDescription": { "message": "Version 0.4.0 ergänzt das Rebranding, ein eigenes PDF-Symbol und eine durchgängige Sprachwahl zwischen Deutsch und Englisch." }
+  "releaseScopeDescription": { "message": "Version 0.5.0 ergänzt die vertrauenswürdige Übergabe aus Thunderbird AI Assistant und behält Symbol sowie vollständige deutsche und englische Oberfläche bei." }
 }

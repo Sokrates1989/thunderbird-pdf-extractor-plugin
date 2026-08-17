@@ -12,10 +12,10 @@ HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archi
 The manifest `path` must point to `thunderbird-pdf-archiver-host.exe`, and
 `allowed_extensions` must contain
 `thunderbird-pdf-archiver@sokrates1989.de`. Extension and host must both be
-version `0.4.0`; an older companion is intentionally incompatible.
+version `0.5.0`; an older companion is intentionally incompatible.
 
 For the recommended installation, rerun
-`Thunderbird-PDF-Archiver-Setup-0.4.0-win-x64.exe`. It repairs the profile XPI,
+`Thunderbird-PDF-Archiver-Setup-0.5.0-win-x64.exe`. It repairs the profile XPI,
 both 32-/64-bit native-host registrations, and the installed manifest together.
 
 ## Setup cannot close Thunderbird

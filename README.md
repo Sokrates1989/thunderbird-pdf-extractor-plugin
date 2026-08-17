@@ -6,13 +6,19 @@ attachments as one searchable PDF in an existing local folder. The source
 message is never moved, marked, or deleted, and there is no Paperless upload or
 credential storage.
 
-## Release 0.4.0 scope
+## Release 0.5.0 scope
 
 The add-on is now consistently named **Thunderbird PDF Archiver** and includes
 a dedicated PDF icon. Its popup, settings, context menu, validation messages,
 and errors are available in German and English. Windows Setup asks for the
 initial language; the saved language selector in the add-on settings can change
 it at any time.
+
+Thunderbird AI Assistant 2.9.0 and newer can hand one explicitly chosen
+dashboard message to this add-on through a versioned cross-extension request.
+Only the fixed AI Assistant extension ID is accepted. The request opens this
+add-on's normal review window; Thunderbird AI Assistant never receives raw mail,
+attachments, output paths, native-host access, or PDF results.
 
 The review popup shows every Thunderbird-detected item with filename, MIME type,
 size, support status, and selection state. Supported real attachments are
@@ -58,7 +64,7 @@ content, filenames, URLs, attachment names, or local paths.
 ## Install on Windows
 
 Download and run
-`Thunderbird-PDF-Archiver-Setup-0.4.0-win-x64.exe`. The per-user setup requires
+`Thunderbird-PDF-Archiver-Setup-0.5.0-win-x64.exe`. The per-user setup requires
 no administrator privileges. It installs the native companion, registers it for
 32- and 64-bit Thunderbird, and installs or updates the XPI in every existing
 Thunderbird profile. New profiles can discover the same registered XPI.
@@ -89,20 +95,20 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\test-set
 ```
 
 The build creates the primary setup at
-`artifacts\Thunderbird-PDF-Archiver-Setup-0.4.0-win-x64.exe`. The isolated setup
+`artifacts\Thunderbird-PDF-Archiver-Setup-0.5.0-win-x64.exe`. The isolated setup
 test uses private LocalAppData and registry targets and removes them again. It
 does not access a real Thunderbird profile.
 
 The legacy PowerShell installer and standalone XPI remain available for
 development diagnostics. They are no longer the recommended user workflow.
 
-Setup writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.4.0` and registers
+Setup writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.5.0` and registers
 the native host under the current user at
 `HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archiver`.
 Administrator privileges are not required.
 
 The build also creates
-`artifacts\thunderbird-pdf-archiver-0.4.0-windows.zip`. A clean Windows user can
+`artifacts\thunderbird-pdf-archiver-0.5.0-windows.zip`. A clean Windows user can
 extract this ZIP, run `installer\windows\install.ps1`, and install the included
 XPI without Node.js, Python, or administrator rights.
 

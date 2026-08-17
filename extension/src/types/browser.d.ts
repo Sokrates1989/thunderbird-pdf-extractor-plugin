@@ -29,6 +29,10 @@ interface ThunderbirdTab {
   readonly id?: number;
 }
 
+interface ThunderbirdMessageSender {
+  readonly id?: string;
+}
+
 interface ThunderbirdNativePort {
   readonly error?: Error;
   readonly onDisconnect: {
@@ -85,6 +89,11 @@ interface ThunderbirdApi {
     };
     readonly onMessage: {
       addListener(listener: (message: unknown) => void | Promise<void>): void;
+    };
+    readonly onMessageExternal: {
+      addListener(
+        listener: (message: unknown, sender: ThunderbirdMessageSender) => unknown,
+      ): void;
     };
     openOptionsPage(): Promise<void>;
     sendMessage(message: object): Promise<unknown>;

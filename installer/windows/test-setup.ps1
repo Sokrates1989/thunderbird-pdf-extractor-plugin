@@ -6,7 +6,7 @@ Runs the Windows setup and uninstaller against isolated files and registry keys.
 [CmdletBinding()]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
-    [string]$Version = '0.4.0'
+    [string]$Version = '0.5.0'
 )
 
 Set-StrictMode -Version Latest

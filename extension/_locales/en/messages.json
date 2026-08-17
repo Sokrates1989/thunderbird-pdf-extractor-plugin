@@ -93,5 +93,5 @@
   "technicalErrorWithCode": { "message": "A technical error occurred (code: $1)." },
   "technicalErrorGeneric": { "message": "An unexpected technical error occurred." },
   "releaseScopeHeading": { "message": "Release scope" },
-  "releaseScopeDescription": { "message": "Version 0.4.0 adds the new name, a dedicated PDF icon, and complete German and English language selection." }
+  "releaseScopeDescription": { "message": "Version 0.5.0 adds trusted hand-off from Thunderbird AI Assistant while retaining the dedicated icon and complete German and English UI." }
 }

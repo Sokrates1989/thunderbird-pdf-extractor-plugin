@@ -1,5 +1,6 @@
-/** Non-persistent background entry point for the Thunderbird action menu. */
+/** Non-persistent background entry point for menu and trusted integration actions. */
 
+import { handleExternalIntegrationRequest } from "./integration/external";
 import { initializeLocalization, message } from "./ui/i18n";
 
 const MENU_ID = "archive-message-as-pdf";
@@ -27,6 +28,17 @@ async function initializeMenu(): Promise<void> {
   await installMenu();
 }
 
+/** Open the existing single-message review workflow for an explicit message ID. */
+async function openReviewWindow(messageId: number): Promise<void> {
+  const parameters = new URLSearchParams({ messageId: String(messageId) });
+  await browser.windows.create({
+    height: 680,
+    type: "popup",
+    url: browser.runtime.getURL(`pages/popup/popup.html?${parameters.toString()}`),
+    width: 520,
+  });
+}
+
 browser.runtime.onInstalled.addListener(() => {
   void initializeMenu().catch(reportBackgroundError);
 });
@@ -43,6 +55,10 @@ browser.runtime.onMessage.addListener((request) => {
   return undefined;
 });
 
+browser.runtime.onMessageExternal.addListener((request, sender) =>
+  handleExternalIntegrationRequest(request, sender, openReviewWindow),
+);
+
 browser.menus.onClicked.addListener((info, tab) => {
   if (info.menuItemId !== MENU_ID) {
     return;
@@ -50,7 +66,8 @@ browser.menus.onClicked.addListener((info, tab) => {
   const selected = info.selectedMessages?.messages ?? [];
   const parameters = new URLSearchParams();
   if (selected.length === 1 && selected[0] !== undefined) {
-    parameters.set("messageId", String(selected[0].id));
+    void openReviewWindow(selected[0].id).catch(reportBackgroundError);
+    return;
   } else if (selected.length > 1) {
     parameters.set("selectionCount", String(selected.length));
   } else if (tab.id !== undefined) {
