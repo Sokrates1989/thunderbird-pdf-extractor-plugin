@@ -102,11 +102,16 @@ function renderDiagnostics(diagnostics: NativeDiagnostics): void {
     not_writable: "diagnosticOutputNotWritable",
     writable: "diagnosticOutputWritable",
   }[diagnostics.outputDirectoryStatus];
+  const platformKey = {
+    macos: "diagnosticPlatformMacos",
+    other: "diagnosticPlatformOther",
+    windows: "diagnosticPlatformWindows",
+  }[diagnostics.platform];
   diagnosticsOutput.textContent = [
     message("diagnosticExtensionVersion", diagnostics.extensionVersion),
     message("diagnosticHostVersion", diagnostics.hostVersion),
     message("diagnosticProtocolVersion", diagnostics.protocolVersion),
-    message("diagnosticWindows", yesNo(diagnostics.platform === "windows")),
+    message("diagnosticPlatform", message(platformKey)),
     message("diagnosticPackaged", yesNo(diagnostics.packaged)),
     message("diagnosticChromium", yesNo(diagnostics.chromiumAvailable)),
     message("diagnosticLibreOffice", yesNo(diagnostics.libreOfficeAvailable)),

@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from paperless_mail_archiver.diagnostics import RedactedAuditLog
+from paperless_mail_archiver.diagnostics import RedactedAuditLog, create_default_audit_log
 
 
 def test_audit_log_writes_only_allow_listed_fields(tmp_path: Path) -> None:
@@ -44,3 +44,14 @@ def test_audit_log_redacts_unexpected_tokens_and_rotates(tmp_path: Path) -> None
     assert '"event":"redacted"' in combined
     assert "private" not in combined
     assert path.with_name("host.jsonl.1").exists()
+
+
+def test_default_macos_audit_log_uses_the_users_application_support(tmp_path: Path) -> None:
+    """The packaged Mac host retains the same bounded local diagnostic capability."""
+    audit = create_default_audit_log(platform_name="darwin", home=tmp_path)
+
+    audit.record("host_started", outcome="success")
+
+    path = tmp_path / "Library/Application Support/ThunderbirdPdfArchiver/logs/host.jsonl"
+    assert audit.available is True
+    assert json.loads(path.read_text(encoding="utf-8"))["event"] == "host_started"

@@ -73,7 +73,10 @@
   "diagnosticExtensionVersion": { "message": "Extension: $1" },
   "diagnosticHostVersion": { "message": "Companion: $1" },
   "diagnosticProtocolVersion": { "message": "Protocol: $1" },
-  "diagnosticWindows": { "message": "Windows runtime: $1" },
+  "diagnosticPlatform": { "message": "Platform: $1" },
+  "diagnosticPlatformMacos": { "message": "macOS" },
+  "diagnosticPlatformOther": { "message": "other" },
+  "diagnosticPlatformWindows": { "message": "Windows" },
   "diagnosticPackaged": { "message": "Standalone executable: $1" },
   "diagnosticChromium": { "message": "Chromium renderer available: $1" },
   "diagnosticLibreOffice": { "message": "LibreOffice converter available: $1" },
@@ -93,5 +96,5 @@
   "technicalErrorWithCode": { "message": "A technical error occurred (code: $1)." },
   "technicalErrorGeneric": { "message": "An unexpected technical error occurred." },
   "releaseScopeHeading": { "message": "Release scope" },
-  "releaseScopeDescription": { "message": "Version 0.5.0 adds trusted hand-off from Thunderbird AI Assistant while retaining the dedicated icon and complete German and English UI." }
+  "releaseScopeDescription": { "message": "Version 0.6.0 adds a native per-user macOS installer and companion while retaining Windows support and the complete German and English UI." }
 }

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from threading import Lock
@@ -93,8 +94,17 @@ class RedactedAuditLog:
             source.replace(destination)
 
 
-def create_default_audit_log() -> RedactedAuditLog:
-    """Create the per-user audit sink, or a disabled sink when LocalAppData is unavailable."""
+def create_default_audit_log(
+    *,
+    platform_name: str | None = None,
+    home: Path | None = None,
+) -> RedactedAuditLog:
+    """Create the supported platform's per-user audit sink or a disabled sink."""
+    current_platform = sys.platform if platform_name is None else platform_name
+    if current_platform == "darwin":
+        user_home = Path.home() if home is None else home
+        path = user_home / "Library/Application Support/ThunderbirdPdfArchiver/logs/host.jsonl"
+        return RedactedAuditLog(path)
     local_app_data = os.environ.get("LOCALAPPDATA", "").strip()
     if not local_app_data:
         return RedactedAuditLog(None)

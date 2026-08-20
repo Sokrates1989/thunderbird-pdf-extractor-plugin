@@ -6,7 +6,7 @@ import type { TransferPayload } from "../services/transfer";
 
 const HOST_NAME = "de.sokrates1989.thunderbird_pdf_archiver";
 const PROTOCOL_VERSION = "1.0";
-export const EXTENSION_COMPONENT_VERSION = "0.5.0";
+export const EXTENSION_COMPONENT_VERSION = "0.6.0";
 const RESPONSE_TIMEOUT_MILLISECONDS = 30_000;
 const COMMIT_TIMEOUT_MILLISECONDS = 600_000;
 const DIRECTORY_PICKER_TIMEOUT_MILLISECONDS = 600_000;
@@ -37,7 +37,7 @@ export interface NativeDiagnostics {
   readonly libreOfficeAvailable: boolean;
   readonly outputDirectoryStatus: "not_configured" | "not_writable" | "writable";
   readonly packaged: boolean;
-  readonly platform: "other" | "windows";
+  readonly platform: "macos" | "other" | "windows";
   readonly protocolVersion: string;
 }
 
@@ -279,7 +279,7 @@ export class NativeArchiveClient {
         typeof response.packaged !== "boolean" ||
         typeof response.protocolVersion !== "string" ||
         !["not_configured", "not_writable", "writable"].includes(outputDirectoryStatus ?? "") ||
-        !["other", "windows"].includes(platform ?? "")
+        !["macos", "other", "windows"].includes(platform ?? "")
       ) {
         throw new UserFacingError(
           "invalid_diagnostics_response",

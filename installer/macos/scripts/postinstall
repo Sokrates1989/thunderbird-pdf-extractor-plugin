@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+# Registers the packaged native companion and installs the XPI in existing profiles.
+#
+set -euo pipefail
+
+readonly EXTENSION_ID='thunderbird-pdf-archiver@sokrates1989.de'
+readonly NATIVE_HOST_NAME='de.sokrates1989.thunderbird_pdf_archiver'
+readonly PAYLOAD_RELATIVE_ROOT='Library/Application Support/Thunderbird PDF Archiver'
+
+install_home="${THUNDERBIRD_PDF_ARCHIVER_INSTALL_HOME:-${HOME}}"
+payload_root="${THUNDERBIRD_PDF_ARCHIVER_PAYLOAD_ROOT:-${install_home}/${PAYLOAD_RELATIVE_ROOT}}"
+profiles_root="${THUNDERBIRD_PDF_ARCHIVER_PROFILES_ROOT:-${install_home}/Library/Thunderbird/Profiles}"
+manifest_directory="${THUNDERBIRD_PDF_ARCHIVER_MANIFEST_DIRECTORY:-${install_home}/Library/Application Support/Mozilla/NativeMessagingHosts}"
+xpi_path="${payload_root}/thunderbird-pdf-archiver.xpi"
+host_path="${payload_root}/thunderbird-pdf-archiver-host"
+version_path="${payload_root}/VERSION"
+manifest_path="${manifest_directory}/${NATIVE_HOST_NAME}.json"
+
+for required_path in "${xpi_path}" "${host_path}" "${version_path}"; do
+    if [[ ! -f "${required_path}" ]]; then
+        printf 'Thunderbird PDF Archiver payload is missing: %s\n' "${required_path}" >&2
+        exit 1
+    fi
+done
+if [[ ! -x "${host_path}" ]]; then
+    printf 'Native companion is not executable: %s\n' "${host_path}" >&2
+    exit 1
+fi
+if [[ ! -d "${profiles_root}" ]]; then
+    printf 'No Thunderbird profile root exists for the current user: %s\n' "${profiles_root}" >&2
+    exit 1
+fi
+
+profile_directories=()
+while IFS= read -r profile_directory; do
+    profile_directories+=("${profile_directory}")
+done < <(find "${profiles_root}" -mindepth 1 -maxdepth 1 -type d -print | LC_ALL=C sort)
+if ((${#profile_directories[@]} == 0)); then
+    printf 'No Thunderbird profiles were found below: %s\n' "${profiles_root}" >&2
+    exit 1
+fi
+
+expected_version="$(<"${version_path}")"
+if [[ ! "${expected_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    printf 'Packaged version is invalid: %s\n' "${expected_version}" >&2
+    exit 1
+fi
+reported_version="$("${host_path}" --version)"
+if [[ "${reported_version}" != "${expected_version}" ]]; then
+    printf 'Native companion version %s does not match package version %s.\n' \
+        "${reported_version}" "${expected_version}" >&2
+    exit 1
+fi
+
+mkdir -p -- "${manifest_directory}"
+temporary_plist="$(mktemp "${manifest_directory}/.${NATIVE_HOST_NAME}.XXXXXX")"
+temporary_json="${temporary_plist}.json"
+cleanup() {
+    rm -f -- "${temporary_plist}" "${temporary_json}"
+}
+trap cleanup EXIT
+
+/usr/bin/plutil -create xml1 "${temporary_plist}"
+/usr/bin/plutil -insert name -string "${NATIVE_HOST_NAME}" "${temporary_plist}"
+/usr/bin/plutil -insert description -string \
+    'Thunderbird PDF Archiver native companion' "${temporary_plist}"
+/usr/bin/plutil -insert path -string "${host_path}" "${temporary_plist}"
+/usr/bin/plutil -insert type -string 'stdio' "${temporary_plist}"
+/usr/bin/plutil -insert allowed_extensions -json \
+    '["thunderbird-pdf-archiver@sokrates1989.de"]' "${temporary_plist}"
+/usr/bin/plutil -convert json -o "${temporary_json}" "${temporary_plist}"
+install -m 0644 -- "${temporary_json}" "${manifest_path}"
+
+for profile_directory in "${profile_directories[@]}"; do
+    extensions_directory="${profile_directory}/extensions"
+    destination_path="${extensions_directory}/${EXTENSION_ID}.xpi"
+    mkdir -p -- "${extensions_directory}"
+    install -m 0644 -- "${xpi_path}" "${destination_path}"
+done
+
+printf 'Installed Thunderbird PDF Archiver into %d profile(s).\n' \
+    "${#profile_directories[@]}"

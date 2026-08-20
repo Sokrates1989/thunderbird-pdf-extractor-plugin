@@ -10,7 +10,11 @@ from paperless_mail_archiver.email_parser import parse_email
 from paperless_mail_archiver.image_resources import ImageSourceResolver
 from paperless_mail_archiver.models import AttachmentDecision
 from paperless_mail_archiver.pdf_utils import validate_and_tag_pdf
-from paperless_mail_archiver.renderers import ReportLabMailRenderer, build_safe_html
+from paperless_mail_archiver.renderers import (
+    ReportLabMailRenderer,
+    _pdf_output_is_complete,
+    build_safe_html,
+)
 from tests.helpers import attachment_email_bytes, plain_email_bytes
 
 
@@ -35,6 +39,18 @@ def test_reportlab_pdf_is_searchable_and_contains_no_raw_mime(tmp_path: Path) ->
     assert "Content-Transfer-Encoding" not in extracted
     assert reader.metadata is not None
     assert reader.metadata.title == document.subject
+
+
+def test_chromium_output_requires_a_complete_pdf_marker(tmp_path: Path) -> None:
+    """A renderer process may be stopped only after a full PDF has been flushed."""
+    target = tmp_path / "chromium.pdf"
+    target.write_bytes(b"%PDF-1.7\n" + b"x" * 128)
+
+    assert _pdf_output_is_complete(target) is False
+
+    target.write_bytes(b"%PDF-1.7\n" + b"x" * 128 + b"\n%%EOF\n")
+
+    assert _pdf_output_is_complete(target) is True
 
 
 def test_safe_html_discloses_but_does_not_embed_attachment() -> None:

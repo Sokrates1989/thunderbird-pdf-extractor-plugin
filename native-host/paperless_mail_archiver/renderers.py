@@ -6,6 +6,7 @@ import html
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 from abc import ABC, abstractmethod
@@ -29,6 +30,7 @@ from paperless_mail_archiver.models import ImageMode, MailDocument
 CHROMIUM_TIMEOUT_SECONDS = 60.0
 CHROMIUM_POLL_SECONDS = 0.05
 MINIMUM_PDF_BYTES = 100
+PDF_COMPLETION_SCAN_BYTES = 4_096
 
 
 class RendererUnavailableError(HostError):
@@ -53,6 +55,29 @@ class MailRenderer(ABC):
         image_mode: ImageMode,
     ) -> None:
         """Render the document into ``target`` or raise a coded host error."""
+
+
+def _pdf_output_is_complete(target: Path) -> bool:
+    """Return whether Chromium has flushed a bounded, complete PDF to disk."""
+    try:
+        size = target.stat().st_size
+        if size < MINIMUM_PDF_BYTES:
+            return False
+        with target.open("rb") as stream:
+            stream.seek(max(0, size - PDF_COMPLETION_SCAN_BYTES))
+            return stream.read().rstrip().endswith(b"%%EOF")
+    except OSError:
+        return False
+
+
+def _stop_chromium(process: subprocess.Popen[bytes]) -> None:
+    """Stop a renderer process after cancellation or a fully flushed output."""
+    process.terminate()
+    try:
+        process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=5)
 
 
 def _metadata_rows(document: MailDocument) -> list[tuple[str, str]]:
@@ -131,8 +156,17 @@ a.image-link .image-placeholder {{ color: #0645ad; text-decoration: underline; }
 
 
 def detect_chromium() -> Path | None:
-    """Find a supported browser using stable Windows locations and PATH."""
+    """Find a supported browser using stable application locations and PATH."""
     candidates: list[Path] = []
+    if sys.platform == "darwin":
+        for application_root in (Path("/Applications"), Path.home() / "Applications"):
+            candidates.extend(
+                [
+                    application_root / "Google Chrome.app/Contents/MacOS/Google Chrome",
+                    application_root / "Chromium.app/Contents/MacOS/Chromium",
+                    application_root / "Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+                ]
+            )
     program_files_x86 = os.environ.get("PROGRAMFILES(X86)")
     program_files = os.environ.get("PROGRAMFILES")
     local_app_data = os.environ.get("LOCALAPPDATA")
@@ -218,7 +252,9 @@ class ChromiumMailRenderer(MailRenderer):
                 f"--print-to-pdf={target}",
                 source.as_uri(),
             ]
-            creation_flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+            creation_flags = (
+                int(getattr(subprocess, "CREATE_NO_WINDOW", 0)) if os.name == "nt" else 0
+            )
             try:
                 process = subprocess.Popen(  # noqa: S603 - Executable is a verified local browser path.
                     command,
@@ -234,23 +270,17 @@ class ChromiumMailRenderer(MailRenderer):
                 ) from error
             deadline = time.monotonic() + CHROMIUM_TIMEOUT_SECONDS
             while process.poll() is None:
+                if _pdf_output_is_complete(target):
+                    _stop_chromium(process)
+                    break
                 if cancellation.wait(CHROMIUM_POLL_SECONDS):
-                    process.terminate()
-                    try:
-                        process.wait(timeout=5)
-                    except subprocess.TimeoutExpired:
-                        process.kill()
-                        process.wait(timeout=5)
+                    _stop_chromium(process)
                     raise CancelledError
                 if time.monotonic() >= deadline:
                     process.kill()
                     process.wait(timeout=5)
                     raise RendererUnavailableError("Chromium PDF rendering timed out.")
-            if (
-                process.returncode != 0
-                or not target.is_file()
-                or target.stat().st_size < MINIMUM_PDF_BYTES
-            ):
+            if not _pdf_output_is_complete(target):
                 target.unlink(missing_ok=True)
                 raise RendererUnavailableError("Chromium did not produce a valid PDF file.")
 
@@ -262,6 +292,8 @@ def register_unicode_font() -> str:
         return font_name
     candidates = (
         Path(os.environ.get("WINDIR", "C:/Windows")) / "Fonts/arial.ttf",
+        Path("/System/Library/Fonts/Supplemental/Arial.ttf"),
+        Path("/System/Library/Fonts/Supplemental/Arial Unicode.ttf"),
         Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
     )
     for candidate in candidates:

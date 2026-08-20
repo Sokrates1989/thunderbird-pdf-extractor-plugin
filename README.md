@@ -1,14 +1,21 @@
 # Thunderbird PDF Archiver
 
 Thunderbird PDF Archiver is a Thunderbird 128+ MailExtension with a local
-Windows companion. It saves one explicitly chosen email and selected supported
-attachments as one searchable PDF in an existing local folder. The source
-message is never moved, marked, or deleted, and there is no Paperless upload or
-credential storage.
+Windows or macOS companion. It saves one explicitly chosen email and selected
+supported attachments as one searchable PDF in an existing local folder. The
+source message is never moved, marked, or deleted, and there is no Paperless
+upload or credential storage.
 
-## Release 0.5.0 scope
+## Release 0.6.0 scope
 
-The add-on is now consistently named **Thunderbird PDF Archiver** and includes
+Release 0.6.0 adds a native, per-user macOS Installer package. It installs the
+localized XPI, a standalone architecture-matched companion, and the required
+Mozilla Native Messaging manifest without administrator privileges. The Mac
+companion uses the system folder picker and Finder, detects applications in the
+standard macOS locations, and keeps its redacted audit log in the user's
+Application Support directory.
+
+Release 0.5.0 consistently named the add-on **Thunderbird PDF Archiver** and added
 a dedicated PDF icon. Its popup, settings, context menu, validation messages,
 and errors are available in German and English. Windows Setup asks for the
 initial language; the saved language selector in the add-on settings can change
@@ -55,16 +62,35 @@ content, filenames, URLs, attachment names, or local paths.
 
 ## Prerequisites
 
-- Windows 11;
+- Windows 11 or macOS with the matching Apple silicon/Intel installer;
 - Thunderbird 128 ESR or newer;
 - Node.js 20.18 or newer for extension development;
-- Python 3.12 for development only; the packaged host is a standalone `.exe`;
+- Python 3.12 for development only; the packaged host is a standalone executable;
 - optional LibreOffice for Office/ODF attachment conversion.
+
+## Install on macOS
+
+Download and open
+`Thunderbird-PDF-Archiver-Setup-0.6.0-macos-arm64.pkg` on Apple silicon, or the
+`macos-x86_64` package on an Intel Mac. The Installer runs for the current user
+without administrator privileges. It installs or updates the fixed-ID XPI in
+every existing Thunderbird profile, installs the standalone native companion,
+and registers its absolute path in Mozilla's per-user Native Messaging folder.
+
+Start Thunderbird at least once before running setup so a profile exists. Close
+Thunderbird when Installer asks, finish setup, then restart Thunderbird. Accept
+any one-time add-on activation or permission prompt, open the add-on settings,
+choose an existing output folder, and run **Run diagnostics**.
+
+Run a newer package directly over the installed version; do not remove the old
+version first. The current package is not Developer ID-signed or notarized. A
+downloaded public build can therefore require explicit approval in macOS
+**Privacy & Security** after its checksum has been verified.
 
 ## Install on Windows
 
 Download and run
-`Thunderbird-PDF-Archiver-Setup-0.5.0-win-x64.exe`. The per-user setup requires
+`Thunderbird-PDF-Archiver-Setup-0.6.0-win-x64.exe`. The per-user setup requires
 no administrator privileges. It installs the native companion, registers it for
 32- and 64-bit Thunderbird, and installs or updates the XPI in every existing
 Thunderbird profile. New profiles can discover the same registered XPI.
@@ -95,22 +121,42 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\test-set
 ```
 
 The build creates the primary setup at
-`artifacts\Thunderbird-PDF-Archiver-Setup-0.5.0-win-x64.exe`. The isolated setup
+`artifacts\Thunderbird-PDF-Archiver-Setup-0.6.0-win-x64.exe`. The isolated setup
 test uses private LocalAppData and registry targets and removes them again. It
 does not access a real Thunderbird profile.
 
 The legacy PowerShell installer and standalone XPI remain available for
 development diagnostics. They are no longer the recommended user workflow.
 
-Setup writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.5.0` and registers
+Setup writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\0.6.0` and registers
 the native host under the current user at
 `HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archiver`.
 Administrator privileges are not required.
 
 The build also creates
-`artifacts\thunderbird-pdf-archiver-0.5.0-windows.zip`. A clean Windows user can
+`artifacts\thunderbird-pdf-archiver-0.6.0-windows.zip`. A clean Windows user can
 extract this ZIP, run `installer\windows\install.ps1`, and install the included
 XPI without Node.js, Python, or administrator rights.
+
+### Build on macOS
+
+Use Node.js 20.18+ and Python 3.12 on the target architecture:
+
+```bash
+./installer/macos/build-setup.sh --python /path/to/python3.12
+./installer/macos/test-setup.sh --skip-build
+```
+
+The build creates
+`artifacts/Thunderbird-PDF-Archiver-Setup-0.6.0-macos-<architecture>.pkg` and
+verifies the XPI, standalone native companion, package domain, native manifest,
+and disposable profile install/update behavior. Build Apple silicon and Intel
+packages on their respective architectures; PyInstaller one-file executables
+cannot be made universal by merging separate builds.
+
+The Windows and macOS builders use their respective checked-in hash locks,
+`native-host/requirements.lock` and `native-host/requirements-macos.lock`, because
+PyInstaller has different platform dependencies.
 
 ## Update from an earlier slice
 
@@ -129,27 +175,31 @@ JavaScript or `Launch` actions to force navigation.
 
 ## Development validation
 
-```powershell
-Set-Location extension
+```text
+cd extension
 npm ci
 npm run typecheck
 npm run lint
 npm test
 npm run package
 
-Set-Location ..\native-host
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --require-hashes -r requirements.lock
-.\.venv\Scripts\python.exe -m ruff check .
-.\.venv\Scripts\python.exe -m ruff format --check .
-.\.venv\Scripts\python.exe -m mypy paperless_mail_archiver tests
-.\.venv\Scripts\python.exe -m pytest
+cd ../native-host
+python3.12 -m venv .venv
+.venv/bin/python -m pip install --require-hashes -r requirements-macos.lock
+.venv/bin/python -m ruff check .
+.venv/bin/python -m ruff format --check .
+.venv/bin/python -m mypy paperless_mail_archiver tests
+.venv/bin/python -m pytest
 ```
+
+The commands above show the macOS paths. On Windows, use `.venv\Scripts\python.exe`
+and the Windows `requirements.lock` instead.
 
 See [architecture](docs/architecture.md), [security](docs/security.md),
 [protocol](docs/protocol.md), [testing](docs/testing.md), the
 [Slice 3 acceptance contract](docs/slice-3-acceptance.md), and
-[troubleshooting](docs/troubleshooting.md).
+[troubleshooting](docs/troubleshooting.md). macOS package acceptance is detailed
+in [macOS installer testing](docs/macos-installer-testing.md).
 
 ## Uninstall
 

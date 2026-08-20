@@ -55,7 +55,7 @@ def choose_output_directory(initial_directory: Path | None, title: str) -> Path 
     environment["TB_PDF_INITIAL_DIRECTORY"] = (
         "" if initial_directory is None else str(initial_directory)
     )
-    creation_flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+    creation_flags = int(getattr(subprocess, "CREATE_NO_WINDOW", 0)) if os.name == "nt" else 0
     try:
         result = subprocess.run(  # noqa: S603 - Executable is a verified Windows system path.
             [

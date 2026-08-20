@@ -1,6 +1,6 @@
 # Native Messaging protocol 1.0
 
-Extension and host component version `0.5.0` must match exactly. Messages are
+Extension and host component version `0.6.0` must match exactly. Messages are
 compact UTF-8 JSON objects framed with Mozilla's four-byte little-endian length
 prefix. Frames are limited to 1 MiB and every message includes
 `protocolVersion: "1.0"`.

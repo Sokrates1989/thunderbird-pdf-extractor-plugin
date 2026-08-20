@@ -2,8 +2,8 @@
 
 ## “Native host has exited” or host not found
 
-Run `installer\windows\install.ps1`, restart Thunderbird, and verify the current
-user registry key points to the generated manifest:
+On Windows, run `installer\windows\install.ps1`, restart Thunderbird, and verify
+the current-user registry key points to the generated manifest:
 
 ```text
 HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archiver
@@ -12,11 +12,22 @@ HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archi
 The manifest `path` must point to `thunderbird-pdf-archiver-host.exe`, and
 `allowed_extensions` must contain
 `thunderbird-pdf-archiver@sokrates1989.de`. Extension and host must both be
-version `0.5.0`; an older companion is intentionally incompatible.
+version `0.6.0`; an older companion is intentionally incompatible.
 
 For the recommended installation, rerun
-`Thunderbird-PDF-Archiver-Setup-0.5.0-win-x64.exe`. It repairs the profile XPI,
+`Thunderbird-PDF-Archiver-Setup-0.6.0-win-x64.exe`. It repairs the profile XPI,
 both 32-/64-bit native-host registrations, and the installed manifest together.
+
+On macOS, rerun the package matching the Mac architecture and verify this file
+exists for the current user:
+
+```text
+~/Library/Application Support/Mozilla/NativeMessagingHosts/de.sokrates1989.thunderbird_pdf_archiver.json
+```
+
+Its `path` must be absolute and point to the executable below
+`~/Library/Application Support/Thunderbird PDF Archiver`. Restart Thunderbird
+after repairing the installation.
 
 ## Setup cannot close Thunderbird
 
@@ -44,6 +55,9 @@ The displayed snapshot contains versions and readiness states only. The rotating
 native log is stored at
 `%LOCALAPPDATA%\ThunderbirdPdfArchiver\logs\host.jsonl`; it contains no mail
 content, filenames, URLs, attachment names, or local paths.
+
+On macOS, the same bounded log is stored at
+`~/Library/Application Support/ThunderbirdPdfArchiver/logs/host.jsonl`.
 
 ## A PDF link replaces the current tab
 

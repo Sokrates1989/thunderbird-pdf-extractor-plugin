@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
@@ -74,6 +75,11 @@ def attachment_support(
 def detect_libreoffice() -> Path | None:
     """Find a local LibreOffice executable without downloading or starting software."""
     candidates: list[Path] = []
+    if sys.platform == "darwin":
+        candidates.extend(
+            application_root / "LibreOffice.app/Contents/MacOS/soffice"
+            for application_root in (Path("/Applications"), Path.home() / "Applications")
+        )
     for variable in ("PROGRAMFILES", "PROGRAMFILES(X86)"):
         root = os.environ.get(variable)
         if root:

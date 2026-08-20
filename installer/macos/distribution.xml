@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <title>Thunderbird PDF Archiver</title>
+    <options customize="never" require-scripts="true"/>
+    <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="false"/>
+    <welcome file="welcome.html" mime-type="text/html"/>
+    <conclusion file="conclusion.html" mime-type="text/html"/>
+    <choices-outline>
+        <line choice="default"/>
+    </choices-outline>
+    <choice id="default" visible="false">
+        <pkg-ref id="com.sokrates1989.thunderbird-pdf-archiver"/>
+    </choice>
+    <pkg-ref id="com.sokrates1989.thunderbird-pdf-archiver" version="@APP_VERSION@">
+        Thunderbird-PDF-Archiver-component.pkg
+    </pkg-ref>
+    <pkg-ref id="com.sokrates1989.thunderbird-pdf-archiver">
+        <must-close>
+            <app id="org.mozilla.thunderbird"/>
+        </must-close>
+    </pkg-ref>
+</installer-gui-script>

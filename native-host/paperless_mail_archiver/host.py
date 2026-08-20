@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import re
 import sys
 from collections.abc import Callable, Mapping
@@ -20,6 +19,11 @@ from paperless_mail_archiver.output_store import (
     test_output_directory_writable,
     validate_output_directory,
 )
+from paperless_mail_archiver.platform_integration import (
+    choose_output_directory,
+    open_output_directory,
+    runtime_platform,
+)
 from paperless_mail_archiver.protocol_io import MessageWriter, read_message
 from paperless_mail_archiver.renderers import detect_chromium
 from paperless_mail_archiver.transfer import MAX_CHUNKS, MAX_RAW_MESSAGE_BYTES, TransferManager
@@ -33,10 +37,6 @@ from paperless_mail_archiver.validation import (
     require_mapping,
     require_protocol,
     require_string,
-)
-from paperless_mail_archiver.windows_integration import (
-    choose_output_directory,
-    open_output_directory,
 )
 
 JOB_ID_PATTERN = re.compile(r"^[A-Za-z0-9-]{1,64}$")
@@ -170,7 +170,7 @@ class NativeHost:
                 "libreOfficeAvailable": self._libreoffice_available,
                 "outputDirectoryStatus": output_status,
                 "packaged": bool(getattr(sys, "frozen", False)),
-                "platform": "windows" if os.name == "nt" else "other",
+                "platform": runtime_platform(),
                 "protocolVersion": PROTOCOL_VERSION,
                 "type": "diagnostics",
             }

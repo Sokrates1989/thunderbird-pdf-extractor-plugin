@@ -1,4 +1,4 @@
-# Testing release 0.5.0
+# Testing release 0.6.0
 
 ## Automated gates
 
@@ -31,6 +31,9 @@ The representative merged fixture must also be rendered to PNG with Poppler and
 all pages inspected after PDF-affecting changes. Automated service tests do not
 replace a real Thunderbird run.
 
+The suite also verifies macOS folder selection and Finder opening without shell
+parsing, platform diagnostics, and the per-user Application Support audit path.
+
 ## Release build gates
 
 From the repository root, run:
@@ -43,14 +46,28 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\install.
 powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\uninstall.ps1 -WhatIf
 ```
 
-The version command must print `0.5.0`. The isolated setup test must complete an
+The version command must print `0.6.0`. The isolated setup test must complete an
 install, existing-profile update, registry check, and uninstall without touching
 real Thunderbird state. Inspect
-`artifacts\thunderbird-pdf-archiver-0.5.0-windows.zip` and confirm it contains the
-one-click setup, 0.5.0 XPI, native executable, legacy install/uninstall scripts,
+`artifacts\thunderbird-pdf-archiver-0.6.0-windows.zip` and confirm it contains the
+one-click setup, 0.6.0 XPI, native executable, legacy install/uninstall scripts,
 notices, and Slice 3 operator documents. Parse every PowerShell script and
 compile both release and test-mode Inno Setup sources before release. See the
 [Windows installer test](windows-installer-testing.md) for the manual gate.
+
+On macOS, run the architecture-native release gate:
+
+```bash
+./installer/macos/build-setup.sh --python /path/to/python3.12
+./installer/macos/test-setup.sh --skip-build
+```
+
+The isolated test must validate the generated Native Messaging manifest,
+existing-profile install/update behavior, current-user-only package domain, and
+standalone host version without touching the real user profile. Complete the
+[macOS installer test](macos-installer-testing.md) before a public Mac release.
+The Mac build must install from `native-host/requirements-macos.lock` with hash
+checking; the existing Windows build continues to use `requirements.lock`.
 
 ## Slice 2 workflow regression walkthrough
 
@@ -61,7 +78,8 @@ Test separately on Thunderbird 128 ESR, the current ESR, and current release:
    settings, switch to the other language and confirm the settings page, archive
    popup, context menu, progress, success, and error messages all change without
    untranslated fallback text.
-2. Build/install both `0.5.0` artifacts and restart Thunderbird.
+2. Build/install the matching `0.6.0` extension and companion artifacts and
+   restart Thunderbird.
 3. Choose a new empty folder with **Durchsuchen …** and run diagnostics. Confirm
    matching component versions, standalone Windows runtime, available audit log,
    renderer/converter status, and a writable output folder without any path in

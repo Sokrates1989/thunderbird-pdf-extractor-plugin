@@ -68,7 +68,7 @@ def convert_office_attachment(
         str(output_directory),
         str(source),
     ]
-    creation_flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+    creation_flags = int(getattr(subprocess, "CREATE_NO_WINDOW", 0)) if os.name == "nt" else 0
     try:
         process = subprocess.Popen(  # noqa: S603 - Path is locally detected, never email-controlled.
             command,

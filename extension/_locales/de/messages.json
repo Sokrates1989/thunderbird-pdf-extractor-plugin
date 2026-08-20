@@ -73,8 +73,11 @@
   "diagnosticExtensionVersion": { "message": "Erweiterung: $1" },
   "diagnosticHostVersion": { "message": "Begleiter: $1" },
   "diagnosticProtocolVersion": { "message": "Protokoll: $1" },
-  "diagnosticWindows": { "message": "Windows-Laufzeit: $1" },
-  "diagnosticPackaged": { "message": "Eigenständige EXE: $1" },
+  "diagnosticPlatform": { "message": "Plattform: $1" },
+  "diagnosticPlatformMacos": { "message": "macOS" },
+  "diagnosticPlatformOther": { "message": "andere" },
+  "diagnosticPlatformWindows": { "message": "Windows" },
+  "diagnosticPackaged": { "message": "Eigenständiges Programm: $1" },
   "diagnosticChromium": { "message": "Chromium-Renderer verfügbar: $1" },
   "diagnosticLibreOffice": { "message": "LibreOffice-Konverter verfügbar: $1" },
   "diagnosticAuditLog": { "message": "Redigiertes Diagnoseprotokoll verfügbar: $1" },
@@ -93,5 +96,5 @@
   "technicalErrorWithCode": { "message": "Ein technischer Fehler ist aufgetreten (Code: $1)." },
   "technicalErrorGeneric": { "message": "Ein unerwarteter technischer Fehler ist aufgetreten." },
   "releaseScopeHeading": { "message": "Release-Umfang" },
-  "releaseScopeDescription": { "message": "Version 0.5.0 ergänzt die vertrauenswürdige Übergabe aus Thunderbird AI Assistant und behält Symbol sowie vollständige deutsche und englische Oberfläche bei." }
+  "releaseScopeDescription": { "message": "Version 0.6.0 ergänzt einen nativen benutzerbezogenen macOS-Installer samt Begleiter und behält Windows-Unterstützung sowie die vollständige deutsche und englische Oberfläche bei." }
 }
