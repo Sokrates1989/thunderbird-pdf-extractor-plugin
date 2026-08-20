@@ -1,3 +1,6 @@
+# Ignore macOS Finder metadata.
+.DS_Store
+
 extension/dist/
 extension/node_modules/
 native-host/.mypy_cache/
