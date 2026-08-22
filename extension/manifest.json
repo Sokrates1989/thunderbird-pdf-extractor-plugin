@@ -2,11 +2,13 @@
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "default_locale": "de",
+  "author": "Sokrates1989",
+  "homepage_url": "https://github.com/Sokrates1989/thunderbird-pdf-extractor-plugin",
   "browser_specific_settings": {
     "gecko": {
-      "id": "thunderbird-pdf-archiver@sokrates1989.de",
+      "id": "thunderbird-pdf@felicitas-wisdom.com",
       "strict_min_version": "128.0"
     }
   },

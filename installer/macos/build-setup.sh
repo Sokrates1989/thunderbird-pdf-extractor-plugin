@@ -105,7 +105,7 @@ if (!versions.every(version => /^\d+\.\d+\.\d+$/.test(String(version))) ||
     throw new Error(`Component versions are not synchronized: ${versions.join(", ")}`);
 }
 if (manifest.browser_specific_settings?.gecko?.id !==
-    "thunderbird-pdf-archiver@sokrates1989.de") {
+    "thunderbird-pdf@felicitas-wisdom.com") {
     throw new Error("Manifest extension ID does not match the installer identity.");
 }
 process.stdout.write(manifest.version);
@@ -152,11 +152,17 @@ process.stdin.on("end", () => {
     const manifest = JSON.parse(input);
     if (manifest.version !== process.argv[1] ||
         manifest.browser_specific_settings?.gecko?.id !==
-            "thunderbird-pdf-archiver@sokrates1989.de") {
+            "thunderbird-pdf@felicitas-wisdom.com") {
         throw new Error("Packaged XPI does not match the source manifest.");
     }
 });
 ' "${version}"
+for required_entry in LICENSE THIRD_PARTY_NOTICES.md; do
+    unzip -Z1 "${xpi_path}" | grep -Fx "${required_entry}" >/dev/null || {
+        printf 'XPI omits required publication entry: %s\n' "${required_entry}" >&2
+        exit 1
+    }
+done
 unzip -p "${xpi_path}" install-defaults.json | node -e '
 let input = "";
 process.stdin.setEncoding("utf8");
@@ -214,6 +220,7 @@ payload_directory="${payload_root}/Library/Application Support/Thunderbird PDF A
 component_package="${temporary_directory}/Thunderbird-PDF-Archiver-component.pkg"
 distribution_path="${temporary_directory}/distribution.xml"
 expanded_package="${temporary_directory}/expanded"
+resources_directory="${temporary_directory}/resources"
 mkdir -p -- "${payload_directory}"
 install -m 0644 -- "${xpi_path}" "${payload_directory}/thunderbird-pdf-archiver.xpi"
 install -m 0755 -- "${native_artifact}" "${payload_directory}/thunderbird-pdf-archiver-host"
@@ -221,6 +228,8 @@ install -m 0644 -- "${REPOSITORY_ROOT}/LICENSE" "${payload_directory}/LICENSE"
 install -m 0644 -- "${REPOSITORY_ROOT}/THIRD_PARTY_NOTICES.md" \
     "${payload_directory}/THIRD_PARTY_NOTICES.md"
 printf '%s\n' "${version}" >"${payload_directory}/VERSION"
+cp -R -- "${SCRIPT_DIRECTORY}/resources" "${resources_directory}"
+install -m 0644 -- "${REPOSITORY_ROOT}/LICENSE" "${resources_directory}/LICENSE.txt"
 xattr -cr "${payload_root}"
 
 sed "s/@APP_VERSION@/${version}/g" \
@@ -240,13 +249,16 @@ mkdir -p -- "${artifact_root}"
 rm -f -- "${output_path}"
 productbuild_arguments=(
     --distribution "${distribution_path}"
-    --resources "${SCRIPT_DIRECTORY}/resources"
+    --resources "${resources_directory}"
     --package-path "${temporary_directory}"
 )
 if [[ -n "${signing_identity}" ]]; then
     productbuild_arguments+=(--sign "${signing_identity}")
 fi
 productbuild "${productbuild_arguments[@]}" "${output_path}"
+
+stable_output_path="${artifact_root}/Thunderbird-PDF-Archiver-Setup-macos-${architecture}.pkg"
+cp -- "${output_path}" "${stable_output_path}"
 
 pkgutil --expand "${output_path}" "${expanded_package}"
 xmllint --noout "${expanded_package}/Distribution"
@@ -256,3 +268,4 @@ xmllint --noout "${expanded_package}/Distribution"
 }
 
 printf 'Created %s (%s bytes).\n' "${output_path}" "$(stat -f '%z' "${output_path}")"
+printf 'Created stable release alias %s.\n' "${stable_output_path}"

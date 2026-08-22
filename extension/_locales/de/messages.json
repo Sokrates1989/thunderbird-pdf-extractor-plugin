@@ -96,5 +96,5 @@
   "technicalErrorWithCode": { "message": "Ein technischer Fehler ist aufgetreten (Code: $1)." },
   "technicalErrorGeneric": { "message": "Ein unerwarteter technischer Fehler ist aufgetreten." },
   "releaseScopeHeading": { "message": "Release-Umfang" },
-  "releaseScopeDescription": { "message": "Version 0.6.0 ergänzt einen nativen benutzerbezogenen macOS-Installer samt Begleiter und behält Windows-Unterstützung sowie die vollständige deutsche und englische Oberfläche bei." }
+  "releaseScopeDescription": { "message": "Version 1.0.0 legt die dauerhafte Veröffentlichungs-ID und die freie GPL-Lizenz fest und ergänzt die Lizenzbestätigung in den nativen macOS- und Windows-Installern." }
 }

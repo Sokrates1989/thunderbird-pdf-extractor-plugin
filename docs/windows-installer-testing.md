@@ -1,8 +1,10 @@
 # Windows one-click installer test
 
 The primary Windows artifact is
-`Thunderbird-PDF-Archiver-Setup-0.6.0-win-x64.exe`. It installs per user and does
-not require administrator privileges.
+`Thunderbird-PDF-Archiver-Setup-1.0.0-win-x64.exe`. It installs per user and does
+not require administrator privileges. Setup displays the bundled
+GPL-3.0-or-later terms and requires the operator to acknowledge them before
+installation.
 
 ## Automated isolated test
 
@@ -30,7 +32,7 @@ Use a disposable Windows user or VM for the clean-install case:
 4. Start Thunderbird and accept its one-time side-load/permission prompt if it
    appears.
 5. Open the add-on settings, select an existing destination, and confirm the
-   diagnostic reports matching version `0.6.0`, packaged host, Windows runtime,
+   diagnostic reports matching version `1.0.0`, packaged host, Windows runtime,
    available Chromium renderer, audit log, and writable destination.
 6. Export the representative message and inspect the merged PDF.
 

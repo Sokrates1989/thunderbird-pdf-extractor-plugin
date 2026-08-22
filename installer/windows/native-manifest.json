@@ -3,5 +3,5 @@
   "description": "Local searchable email and attachment PDF companion for Thunderbird.",
   "path": "thunderbird-pdf-archiver-host.exe",
   "type": "stdio",
-  "allowed_extensions": ["thunderbird-pdf-archiver@sokrates1989.de"]
+  "allowed_extensions": ["thunderbird-pdf@felicitas-wisdom.com"]
 }

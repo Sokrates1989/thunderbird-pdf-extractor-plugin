@@ -6,4 +6,4 @@ ships `installer/windows/native-manifest.json`, whose executable path is
 relative to the installed manifest as supported on Windows. Both installers
 register the manifest for the current user. The fixed host name is
 `de.sokrates1989.thunderbird_pdf_archiver`; the only allowed extension is
-`thunderbird-pdf-archiver@sokrates1989.de`.
+`thunderbird-pdf@felicitas-wisdom.com`.

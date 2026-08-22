@@ -6,7 +6,7 @@ set -euo pipefail
 
 readonly SCRIPT_DIRECTORY="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 readonly REPOSITORY_ROOT="$(cd -- "${SCRIPT_DIRECTORY}/../.." && pwd)"
-readonly EXTENSION_ID='thunderbird-pdf-archiver@sokrates1989.de'
+readonly EXTENSION_ID='thunderbird-pdf@felicitas-wisdom.com'
 readonly NATIVE_HOST_NAME='de.sokrates1989.thunderbird_pdf_archiver'
 
 skip_build=false
@@ -81,6 +81,7 @@ install -m 0644 -- "${xpi_path}" "${payload_root}/thunderbird-pdf-archiver.xpi"
 install -m 0755 -- "${host_path}" "${payload_root}/thunderbird-pdf-archiver-host"
 printf '%s\n' "${version}" >"${payload_root}/VERSION"
 printf 'old fixture\n' >"${first_profile}/extensions/${EXTENSION_ID}.xpi"
+printf 'legacy fixture\n' >"${first_profile}/extensions/thunderbird-pdf-archiver@sokrates1989.de.xpi"
 
 THUNDERBIRD_PDF_ARCHIVER_INSTALL_HOME="${test_home}" \
 THUNDERBIRD_PDF_ARCHIVER_PAYLOAD_ROOT="${payload_root}" \
@@ -97,6 +98,10 @@ for profile_directory in "${first_profile}" "${second_profile}"; do
         exit 1
     }
 done
+[[ ! -e "${first_profile}/extensions/thunderbird-pdf-archiver@sokrates1989.de.xpi" ]] || {
+    printf 'Legacy private extension identity was not removed.\n' >&2
+    exit 1
+}
 
 node -e '
 const fs = require("node:fs");
@@ -105,7 +110,7 @@ if (manifest.name !== "de.sokrates1989.thunderbird_pdf_archiver" ||
     manifest.description !== "Thunderbird PDF Archiver native companion" ||
     manifest.path !== process.argv[2] || manifest.type !== "stdio" ||
     JSON.stringify(manifest.allowed_extensions) !==
-        JSON.stringify(["thunderbird-pdf-archiver@sokrates1989.de"])) {
+        JSON.stringify(["thunderbird-pdf@felicitas-wisdom.com"])) {
     throw new Error("Installed native manifest is invalid.");
 }
 ' "${manifest_path}" "${payload_root}/thunderbird-pdf-archiver-host"
@@ -153,6 +158,12 @@ pkgutil --expand "${package_path}" "${expanded_product}"
 grep -F 'enable_currentUserHome="true"' "${expanded_product}/Distribution" >/dev/null
 grep -F 'enable_localSystem="false"' "${expanded_product}/Distribution" >/dev/null
 grep -F '<app id="org.mozilla.thunderbird"/>' "${expanded_product}/Distribution" >/dev/null
+grep -F '<license file="LICENSE.txt" mime-type="text/plain"/>' \
+    "${expanded_product}/Distribution" >/dev/null
+cmp -s "${REPOSITORY_ROOT}/LICENSE" "${expanded_product}/Resources/LICENSE.txt" || {
+    printf 'Product archive contains an unexpected license resource.\n' >&2
+    exit 1
+}
 grep -F "version=\"${version}\"" "${expanded_product}/Distribution" >/dev/null
 cmp -s \
     "${SCRIPT_DIRECTORY}/scripts/postinstall" \
@@ -163,6 +174,8 @@ cmp -s \
 payload_files="$(pkgutil --payload-files "${package_path}")"
 for required_payload in \
     'Library/Application Support/Thunderbird PDF Archiver/VERSION' \
+    'Library/Application Support/Thunderbird PDF Archiver/LICENSE' \
+    'Library/Application Support/Thunderbird PDF Archiver/THIRD_PARTY_NOTICES.md' \
     'Library/Application Support/Thunderbird PDF Archiver/thunderbird-pdf-archiver-host' \
     'Library/Application Support/Thunderbird PDF Archiver/thunderbird-pdf-archiver.xpi'; do
     printf '%s\n' "${payload_files}" | grep -F "${required_payload}" >/dev/null || {
@@ -170,6 +183,12 @@ for required_payload in \
         exit 1
     }
 done
+cmp -s \
+    "${package_path}" \
+    "${REPOSITORY_ROOT}/artifacts/Thunderbird-PDF-Archiver-Setup-macos-${architecture}.pkg" || {
+        printf 'Stable macOS release alias differs from the versioned package.\n' >&2
+        exit 1
+    }
 
 domain_information="$(installer -dominfo -pkg "${package_path}")"
 printf '%s\n' "${domain_information}" | grep -F 'CurrentUserHomeDirectory' >/dev/null

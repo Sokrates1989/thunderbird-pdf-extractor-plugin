@@ -6,7 +6,7 @@ Compiles the per-user Windows setup from verified extension and native-host arti
 [CmdletBinding()]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
-    [string]$Version = '0.6.0',
+    [string]$Version = '1.0.0',
 
     [switch]$TestMode
 )
@@ -74,5 +74,9 @@ if ($TestMode) {
     Write-Output (Join-Path $testOutput "Thunderbird-PDF-Archiver-Setup-$Version-test.exe")
 }
 else {
-    Write-Output (Join-Path $artifactRoot "Thunderbird-PDF-Archiver-Setup-$Version-win-x64.exe")
+    $versionedSetup = Join-Path $artifactRoot "Thunderbird-PDF-Archiver-Setup-$Version-win-x64.exe"
+    $stableSetup = Join-Path $artifactRoot 'Thunderbird-PDF-Archiver-Setup-win-x64.exe'
+    Copy-Item -LiteralPath $versionedSetup -Destination $stableSetup -Force
+    Write-Output $versionedSetup
+    Write-Output $stableSetup
 }

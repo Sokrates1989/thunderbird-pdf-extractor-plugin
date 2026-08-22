@@ -1,7 +1,7 @@
 /** Package the built extension as a reproducible-root-layout XPI archive. */
 
 import { createWriteStream } from "node:fs";
-import { mkdir } from "node:fs/promises";
+import { copyFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -18,7 +18,7 @@ if (!["auto", "de", "en"].includes(language)) {
 const languageSuffix = language === "auto" ? "" : `-${language}`;
 const artifactPath = path.join(
   artifactDirectory,
-  `thunderbird-pdf-archiver-0.6.0${languageSuffix}.xpi`,
+  `thunderbird-pdf-archiver-1.0.0${languageSuffix}.xpi`,
 );
 
 await mkdir(artifactDirectory, { recursive: true });
@@ -36,10 +36,18 @@ await new Promise((resolve, reject) => {
     dot: true,
     ignore: ["install-defaults.json"],
   });
-  archive.append(`${JSON.stringify({ language, version: "0.6.0" }, undefined, 2)}\n`, {
+  archive.file(path.join(repositoryRoot, "LICENSE"), { name: "LICENSE" });
+  archive.file(path.join(repositoryRoot, "THIRD_PARTY_NOTICES.md"), {
+    name: "THIRD_PARTY_NOTICES.md",
+  });
+  archive.append(`${JSON.stringify({ language, version: "1.0.0" }, undefined, 2)}\n`, {
     name: "install-defaults.json",
   });
   void archive.finalize();
 });
+
+if (language === "auto") {
+  await copyFile(artifactPath, path.join(artifactDirectory, "thunderbird-pdf-archiver.xpi"));
+}
 
 process.stdout.write(`${artifactPath}\n`);

@@ -6,7 +6,7 @@ Installs and registers the versioned native companion for the current user.
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
-    [string]$Version = '0.6.0',
+    [string]$Version = '1.0.0',
 
     [string]$ArtifactDirectory = ''
 )
@@ -15,7 +15,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $hostName = 'de.sokrates1989.thunderbird_pdf_archiver'
-$extensionId = 'thunderbird-pdf-archiver@sokrates1989.de'
+$extensionId = 'thunderbird-pdf@felicitas-wisdom.com'
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 if ([string]::IsNullOrWhiteSpace($ArtifactDirectory)) {
     $ArtifactDirectory = Join-Path $repositoryRoot 'artifacts\native-host'

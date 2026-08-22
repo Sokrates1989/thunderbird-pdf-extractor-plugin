@@ -6,7 +6,7 @@ Runs the Windows setup and uninstaller against isolated files and registry keys.
 [CmdletBinding()]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
-    [string]$Version = '0.6.0'
+    [string]$Version = '1.0.0'
 )
 
 Set-StrictMode -Version Latest
@@ -159,7 +159,7 @@ if ((Test-Path -LiteralPath $testRoot) -or $testRegistryExists) {
 $profileExtensionDirectory = Join-Path $testRoot 'Profiles\fixture.default\extensions'
 New-Item -ItemType Directory -Path $profileExtensionDirectory -Force | Out-Null
 $profileExtension = Join-Path $profileExtensionDirectory (
-    'thunderbird-pdf-archiver@sokrates1989.de.xpi'
+    'thunderbird-pdf@felicitas-wisdom.com.xpi'
 )
 [System.IO.File]::WriteAllText($profileExtension, 'old fixture', [System.Text.Encoding]::UTF8)
 
@@ -197,7 +197,7 @@ try {
             throw "The $view native-host registration does not target the installed manifest."
         }
         if ((Get-RegistryValueInView -SubKey $extensionRegistry -ValueName (
-                    'thunderbird-pdf-archiver@sokrates1989.de'
+                    'thunderbird-pdf@felicitas-wisdom.com'
                 ) -View $view) -ne $installedExtension) {
             throw "The $view extension registration does not target the installed XPI."
         }

@@ -1,6 +1,6 @@
 # Native Messaging protocol 1.0
 
-Extension and host component version `0.6.0` must match exactly. Messages are
+Extension and host component version `1.0.0` must match exactly. Messages are
 compact UTF-8 JSON objects framed with Mozilla's four-byte little-endian length
 prefix. Frames are limited to 1 MiB and every message includes
 `protocolVersion: "1.0"`.
@@ -10,7 +10,7 @@ prefix. Frames are limited to 1 MiB and every message includes
 The independent cross-extension protocol is version `1`. The PDF Archiver
 background accepts `thunderbird-pdf-archiver:ping` and
 `thunderbird-pdf-archiver:open-review` only when Thunderbird reports the sender
-ID as `thunderbird-ai@example.com`. An open-review request contains one positive,
+ID as `thunderbird-ai@felicitas-wisdom.com`. An open-review request contains one positive,
 safe-integer Thunderbird message ID and opens the existing review popup. The
 boundary never returns message content, attachments, paths, native-host data, or
 PDF results. Unknown senders receive no integration response.

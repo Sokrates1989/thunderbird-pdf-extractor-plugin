@@ -3,7 +3,7 @@
  * Only the explicitly trusted companion extension may open the PDF review window.
  */
 
-export const AI_ASSISTANT_EXTENSION_ID = "thunderbird-ai@example.com";
+export const AI_ASSISTANT_EXTENSION_ID = "thunderbird-ai@felicitas-wisdom.com";
 export const PDF_ARCHIVER_INTEGRATION_PROTOCOL_VERSION = 1;
 
 export interface ExternalMessageSender {

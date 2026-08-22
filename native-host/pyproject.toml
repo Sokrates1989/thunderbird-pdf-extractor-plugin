@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "thunderbird-pdf-archiver-host"
-version = "0.6.0"
+version = "1.0.0"
 description = "Local Native Messaging companion for searchable Thunderbird email and attachment PDFs."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
-license = { text = "MIT" }
+license = { text = "GPL-3.0-or-later" }
 dependencies = [
   "pillow==12.3.0",
   "pypdf==6.15.0",
@@ -32,7 +32,7 @@ where = ["."]
 include = ["paperless_mail_archiver*"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --strict-config --strict-markers -p no:cacheprovider --basetemp=.pytest-temp"
+addopts = "-ra --strict-config --strict-markers -p no:cacheprovider"
 testpaths = ["tests"]
 markers = [
   "chromium: uses an installed local Chromium browser to verify rendering isolation"

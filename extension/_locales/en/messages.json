@@ -96,5 +96,5 @@
   "technicalErrorWithCode": { "message": "A technical error occurred (code: $1)." },
   "technicalErrorGeneric": { "message": "An unexpected technical error occurred." },
   "releaseScopeHeading": { "message": "Release scope" },
-  "releaseScopeDescription": { "message": "Version 0.6.0 adds a native per-user macOS installer and companion while retaining Windows support and the complete German and English UI." }
+  "releaseScopeDescription": { "message": "Version 1.0.0 establishes the permanent publication identity, GPL open-source licensing, and license acknowledgement in the native macOS and Windows installers." }
 }

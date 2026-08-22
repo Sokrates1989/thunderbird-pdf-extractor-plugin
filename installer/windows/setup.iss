@@ -1,13 +1,14 @@
 ; Builds the per-user Windows setup around the already verified XPI and native-host artifacts.
 
 #ifndef AppVersion
-  #define AppVersion "0.6.0"
+  #define AppVersion "1.0.0"
 #endif
 
 #define AppName "Thunderbird PDF Archiver"
 #define AppPublisher "Sokrates1989"
 #define AppUrl "https://github.com/Sokrates1989/thunderbird-pdf-extractor-plugin"
-#define ExtensionId "thunderbird-pdf-archiver@sokrates1989.de"
+#define ExtensionId "thunderbird-pdf@felicitas-wisdom.com"
+#define LegacyExtensionId "thunderbird-pdf-archiver@sokrates1989.de"
 #define ExtensionFileName "thunderbird-pdf-archiver-" + AppVersion + ".xpi"
 #define GermanExtensionSource "thunderbird-pdf-archiver-" + AppVersion + "-de.xpi"
 #define EnglishExtensionSource "thunderbird-pdf-archiver-" + AppVersion + "-en.xpi"
@@ -178,6 +179,7 @@ var
   ProfileDirectory: String;
   ExtensionsDirectory: String;
   DestinationPath: String;
+  LegacyPath: String;
   SourcePath: String;
 begin
   ProfilesRoot := ThunderbirdProfilesRoot;
@@ -197,6 +199,9 @@ begin
           if DirExists(ExtensionsDirectory) then
           begin
             DestinationPath := AddBackslash(ExtensionsDirectory) + '{#ExtensionId}.xpi';
+            LegacyPath := AddBackslash(ExtensionsDirectory) + '{#LegacyExtensionId}.xpi';
+            if FileExists(LegacyPath) and not DeleteFile(LegacyPath) then
+              RaiseException(FmtMessage(CustomMessage('ProfileInstallFailed'), [LegacyPath]));
             if not CopyFile(SourcePath, DestinationPath, False) then
               RaiseException(FmtMessage(CustomMessage('ProfileInstallFailed'), [DestinationPath]));
           end;
@@ -258,7 +263,12 @@ end;
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then
+  begin
+    RegDeleteValue(HKCU32, '{#ExtensionRegistrySubkey}', '{#LegacyExtensionId}');
+    if IsWin64 then
+      RegDeleteValue(HKCU64, '{#ExtensionRegistrySubkey}', '{#LegacyExtensionId}');
     InstallExtensionIntoExistingProfiles;
+  end;
 end;
 
 function InitializeUninstall: Boolean;
