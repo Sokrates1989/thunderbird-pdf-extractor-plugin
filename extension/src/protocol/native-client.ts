@@ -6,10 +6,20 @@ import type { TransferPayload } from "../services/transfer";
 
 const HOST_NAME = "de.sokrates1989.thunderbird_pdf_archiver";
 const PROTOCOL_VERSION = "1.0";
-export const EXTENSION_COMPONENT_VERSION = "1.0.0";
+export const EXTENSION_COMPONENT_VERSION = "1.0.1";
 const RESPONSE_TIMEOUT_MILLISECONDS = 30_000;
 const COMMIT_TIMEOUT_MILLISECONDS = 600_000;
 const DIRECTORY_PICKER_TIMEOUT_MILLISECONDS = 600_000;
+
+/** Distinguish a missing or forbidden registration from a host that crashed after launch. */
+export function nativeDisconnectCode(errorMessage: string | undefined): string {
+  const normalizedMessage = (errorMessage ?? "").toLowerCase();
+  return /no such native application|native host.*not found|not registered|access.*forbidden/u.test(
+    normalizedMessage,
+  )
+    ? "native_host_unavailable"
+    : "host_disconnected";
+}
 
 export interface ProgressUpdate {
   readonly completed: number;
@@ -208,10 +218,11 @@ function connect(onProgress: (progress: ProgressUpdate) => void): {
     inbox.accept(message);
   });
   port.onDisconnect.addListener((disconnectedPort) => {
+    const errorMessage = disconnectedPort.error?.message;
     inbox.failAll(
       new UserFacingError(
-        "host_disconnected",
-        disconnectedPort.error?.message ?? "The native host disconnected unexpectedly.",
+        nativeDisconnectCode(errorMessage),
+        errorMessage ?? "The native host disconnected unexpectedly.",
       ),
     );
   });

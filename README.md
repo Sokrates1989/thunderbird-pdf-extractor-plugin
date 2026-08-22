@@ -16,10 +16,15 @@ upload or credential storage.
 
 Stable asset names always select the latest GitHub release. Each release additionally retains versioned installers, the XPI, source, and SHA-256 checksums as its history.
 
-## Release 1.0.0 scope
+## Release 1.0.1 scope
 
-Release 1.0.0 establishes the permanent publication identity
-`thunderbird-pdf@felicitas-wisdom.com`, adopts GPL-3.0-or-later, and adds
+Release 1.0.1 repairs the per-user macOS Native Messaging registration path so
+Thunderbird can launch the packaged companion. Reinstalling also removes the
+obsolete manifest from the incorrect Application Support location and provides
+an actionable error when registration is missing.
+
+Release 1.0.0 established the permanent publication identity
+`thunderbird-pdf@felicitas-wisdom.com`, adopted GPL-3.0-or-later, and added
 license acknowledgement to the native installers. It retains the per-user
 macOS and Windows packages, localized XPI, architecture-matched companion, and
 Mozilla Native Messaging registration without administrator privileges.
@@ -80,7 +85,7 @@ content, filenames, URLs, attachment names, or local paths.
 ## Install on macOS
 
 Download and open
-`Thunderbird-PDF-Archiver-Setup-1.0.0-macos-arm64.pkg` on Apple silicon, or the
+`Thunderbird-PDF-Archiver-Setup-1.0.1-macos-arm64.pkg` on Apple silicon, or the
 `macos-x86_64` package on an Intel Mac. The Installer runs for the current user
 without administrator privileges. It installs or updates the fixed-ID XPI in
 every existing Thunderbird profile, installs the standalone native companion,
@@ -100,7 +105,7 @@ downloaded public build can therefore require explicit approval in macOS
 ## Install on Windows
 
 Download and run
-`Thunderbird-PDF-Archiver-Setup-1.0.0-win-x64.exe`. The per-user setup requires
+`Thunderbird-PDF-Archiver-Setup-1.0.1-win-x64.exe`. The per-user setup requires
 no administrator privileges. It installs the native companion, registers it for
 32- and 64-bit Thunderbird, and installs or updates the XPI in every existing
 Thunderbird profile. New profiles can discover the same registered XPI.
@@ -117,7 +122,7 @@ Run a newer setup directly over the installed version; do not uninstall first.
 To remove the product, use Windows **Installed apps**. Exported PDFs are never
 removed.
 
-The native 1.0.0 installers remove the private prerelease identity
+The native 1.0.1 installers remove the private prerelease identity
 `thunderbird-pdf-archiver@sokrates1989.de` before installing the permanent
 publication identity. A manual XPI installation requires uninstalling the
 prerelease identity once.
@@ -137,20 +142,20 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\test-set
 ```
 
 The build creates the primary setup at
-`artifacts\Thunderbird-PDF-Archiver-Setup-1.0.0-win-x64.exe`. The isolated setup
+`artifacts\Thunderbird-PDF-Archiver-Setup-1.0.1-win-x64.exe`. The isolated setup
 test uses private LocalAppData and registry targets and removes them again. It
 does not access a real Thunderbird profile.
 
 The legacy PowerShell installer and standalone XPI remain available for
 development diagnostics. They are no longer the recommended user workflow.
 
-Setup writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\1.0.0` and registers
+Setup writes below `%LOCALAPPDATA%\ThunderbirdPdfArchiver\1.0.1` and registers
 the native host under the current user at
 `HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archiver`.
 Administrator privileges are not required.
 
 The build also creates
-`artifacts\thunderbird-pdf-archiver-1.0.0-windows.zip`. A clean Windows user can
+`artifacts\thunderbird-pdf-archiver-1.0.1-windows.zip`. A clean Windows user can
 extract this ZIP, run `installer\windows\install.ps1`, and install the included
 XPI without Node.js, Python, or administrator rights.
 
@@ -164,7 +169,7 @@ Use Node.js 20.18+ and Python 3.12 on the target architecture:
 ```
 
 The build creates
-`artifacts/Thunderbird-PDF-Archiver-Setup-1.0.0-macos-<architecture>.pkg` and
+`artifacts/Thunderbird-PDF-Archiver-Setup-1.0.1-macos-<architecture>.pkg` and
 verifies the XPI, standalone native companion, package domain, native manifest,
 and disposable profile install/update behavior. Build Apple silicon and Intel
 packages on their respective architectures; PyInstaller one-file executables

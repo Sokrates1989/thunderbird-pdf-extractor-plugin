@@ -74,14 +74,19 @@ profiles_root="${test_home}/Library/Thunderbird/Profiles"
 first_profile="${profiles_root}/fixture.default"
 second_profile="${profiles_root}/fixture.default-esr"
 payload_root="${temporary_directory}/payload"
-manifest_directory="${test_home}/Library/Application Support/Mozilla/NativeMessagingHosts"
+manifest_directory="${test_home}/Library/Mozilla/NativeMessagingHosts"
 manifest_path="${manifest_directory}/${NATIVE_HOST_NAME}.json"
-mkdir -p -- "${first_profile}/extensions" "${second_profile}" "${payload_root}"
+legacy_manifest_directory="${test_home}/Library/Application Support/Mozilla/NativeMessagingHosts"
+legacy_manifest_path="${legacy_manifest_directory}/${NATIVE_HOST_NAME}.json"
+mkdir -p -- \
+    "${first_profile}/extensions" "${second_profile}" "${payload_root}" \
+    "${legacy_manifest_directory}"
 install -m 0644 -- "${xpi_path}" "${payload_root}/thunderbird-pdf-archiver.xpi"
 install -m 0755 -- "${host_path}" "${payload_root}/thunderbird-pdf-archiver-host"
 printf '%s\n' "${version}" >"${payload_root}/VERSION"
 printf 'old fixture\n' >"${first_profile}/extensions/${EXTENSION_ID}.xpi"
 printf 'legacy fixture\n' >"${first_profile}/extensions/thunderbird-pdf-archiver@sokrates1989.de.xpi"
+printf '{"legacy":true}\n' >"${legacy_manifest_path}"
 
 THUNDERBIRD_PDF_ARCHIVER_INSTALL_HOME="${test_home}" \
 THUNDERBIRD_PDF_ARCHIVER_PAYLOAD_ROOT="${payload_root}" \
@@ -98,6 +103,10 @@ for profile_directory in "${first_profile}" "${second_profile}"; do
         exit 1
     }
 done
+[[ ! -e "${legacy_manifest_path}" ]] || {
+    printf 'Legacy macOS native-manifest registration was not removed.\n' >&2
+    exit 1
+}
 [[ ! -e "${first_profile}/extensions/thunderbird-pdf-archiver@sokrates1989.de.xpi" ]] || {
     printf 'Legacy private extension identity was not removed.\n' >&2
     exit 1
@@ -129,6 +138,8 @@ if (defaults.language !== "auto" || defaults.version !== process.argv[2]) {
 
 printf 'stale update fixture\n' >"${second_profile}/extensions/${EXTENSION_ID}.xpi"
 printf '{"stale":true}\n' >"${manifest_path}"
+mkdir -p -- "${legacy_manifest_directory}"
+printf '{"legacy":true}\n' >"${legacy_manifest_path}"
 THUNDERBIRD_PDF_ARCHIVER_INSTALL_HOME="${test_home}" \
 THUNDERBIRD_PDF_ARCHIVER_PAYLOAD_ROOT="${payload_root}" \
     "${SCRIPT_DIRECTORY}/scripts/postinstall"
@@ -143,6 +154,10 @@ if (manifest.path !== process.argv[2]) {
     throw new Error("Second installation did not repair the native manifest.");
 }
 ' "${manifest_path}" "${payload_root}/thunderbird-pdf-archiver-host"
+[[ ! -e "${legacy_manifest_path}" ]] || {
+    printf 'Second installation did not remove the legacy native manifest.\n' >&2
+    exit 1
+}
 
 missing_home="${temporary_directory}/missing-home"
 mkdir -p -- "${missing_home}"

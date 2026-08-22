@@ -91,10 +91,11 @@
   "connectionSuccess": { "message": "The local companion and output folder are ready." },
   "connectionFailure": { "message": "Connection failed: $1" },
   "errorHostDisconnected": { "message": "The local companion disconnected unexpectedly. Restart Thunderbird and try again." },
+  "errorNativeHostUnavailable": { "message": "The local companion is not registered correctly or could not be started. Run the current installer again, then restart Thunderbird." },
   "errorHostTimeout": { "message": "The local companion did not respond in time." },
   "errorIncompatibleHost": { "message": "The extension and local companion have different versions. Run the current installer again." },
   "technicalErrorWithCode": { "message": "A technical error occurred (code: $1)." },
   "technicalErrorGeneric": { "message": "An unexpected technical error occurred." },
   "releaseScopeHeading": { "message": "Release scope" },
-  "releaseScopeDescription": { "message": "Version 1.0.0 establishes the permanent publication identity, GPL open-source licensing, and license acknowledgement in the native macOS and Windows installers." }
+  "releaseScopeDescription": { "message": "Version 1.0.1 repairs the per-user macOS Native Messaging registration so Thunderbird can start the local companion." }
 }

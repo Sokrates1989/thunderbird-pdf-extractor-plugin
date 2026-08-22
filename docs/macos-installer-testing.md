@@ -1,7 +1,7 @@
 # macOS one-click installer test
 
 The primary macOS artifact is
-`Thunderbird-PDF-Archiver-Setup-1.0.0-macos-<architecture>.pkg`. It installs the
+`Thunderbird-PDF-Archiver-Setup-1.0.1-macos-<architecture>.pkg`. It installs the
 extension and local native companion for the current user and does not require
 administrator privileges. The Installer shows the bundled GPL-3.0-or-later
 terms and requires the operator to acknowledge them before installation. Apple
@@ -38,7 +38,7 @@ Use a disposable macOS user for the clean-install case:
 3. Start Thunderbird and accept any one-time side-load or permission prompt.
 4. Open the add-on settings, select an existing output folder with the native
    macOS picker, and run diagnostics.
-5. Confirm the diagnostic reports matching version `1.0.0`, macOS platform,
+5. Confirm the diagnostic reports matching version `1.0.1`, macOS platform,
    standalone executable, redacted audit log, browser/LibreOffice availability,
    and a writable output folder.
 6. Export the representative message and inspect the merged PDF.

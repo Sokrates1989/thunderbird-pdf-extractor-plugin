@@ -12,11 +12,13 @@ readonly PAYLOAD_RELATIVE_ROOT='Library/Application Support/Thunderbird PDF Arch
 install_home="${THUNDERBIRD_PDF_ARCHIVER_INSTALL_HOME:-${HOME}}"
 payload_root="${THUNDERBIRD_PDF_ARCHIVER_PAYLOAD_ROOT:-${install_home}/${PAYLOAD_RELATIVE_ROOT}}"
 profiles_root="${THUNDERBIRD_PDF_ARCHIVER_PROFILES_ROOT:-${install_home}/Library/Thunderbird/Profiles}"
-manifest_directory="${THUNDERBIRD_PDF_ARCHIVER_MANIFEST_DIRECTORY:-${install_home}/Library/Application Support/Mozilla/NativeMessagingHosts}"
+manifest_directory="${THUNDERBIRD_PDF_ARCHIVER_MANIFEST_DIRECTORY:-${install_home}/Library/Mozilla/NativeMessagingHosts}"
+legacy_manifest_directory="${THUNDERBIRD_PDF_ARCHIVER_LEGACY_MANIFEST_DIRECTORY:-${install_home}/Library/Application Support/Mozilla/NativeMessagingHosts}"
 xpi_path="${payload_root}/thunderbird-pdf-archiver.xpi"
 host_path="${payload_root}/thunderbird-pdf-archiver-host"
 version_path="${payload_root}/VERSION"
 manifest_path="${manifest_directory}/${NATIVE_HOST_NAME}.json"
+legacy_manifest_path="${legacy_manifest_directory}/${NATIVE_HOST_NAME}.json"
 
 for required_path in "${xpi_path}" "${host_path}" "${version_path}"; do
     if [[ ! -f "${required_path}" ]]; then
@@ -72,6 +74,9 @@ trap cleanup EXIT
     '["thunderbird-pdf@felicitas-wisdom.com"]' "${temporary_plist}"
 /usr/bin/plutil -convert json -o "${temporary_json}" "${temporary_plist}"
 install -m 0644 -- "${temporary_json}" "${manifest_path}"
+if [[ "${legacy_manifest_path}" != "${manifest_path}" ]]; then
+    rm -f -- "${legacy_manifest_path}"
+fi
 
 for profile_directory in "${profile_directories[@]}"; do
     extensions_directory="${profile_directory}/extensions"

@@ -91,10 +91,11 @@
   "connectionSuccess": { "message": "Lokaler Begleiter und Zielordner sind einsatzbereit." },
   "connectionFailure": { "message": "Verbindung fehlgeschlagen: $1" },
   "errorHostDisconnected": { "message": "Der lokale Begleiter wurde unerwartet getrennt. Starten Sie Thunderbird neu und versuchen Sie es erneut." },
+  "errorNativeHostUnavailable": { "message": "Der lokale Begleiter ist nicht richtig registriert oder konnte nicht gestartet werden. Führen Sie den aktuellen Installer erneut aus und starten Sie Thunderbird danach neu." },
   "errorHostTimeout": { "message": "Der lokale Begleiter hat nicht rechtzeitig geantwortet." },
   "errorIncompatibleHost": { "message": "Erweiterung und lokaler Begleiter haben unterschiedliche Versionen. Führen Sie den aktuellen Installer erneut aus." },
   "technicalErrorWithCode": { "message": "Ein technischer Fehler ist aufgetreten (Code: $1)." },
   "technicalErrorGeneric": { "message": "Ein unerwarteter technischer Fehler ist aufgetreten." },
   "releaseScopeHeading": { "message": "Release-Umfang" },
-  "releaseScopeDescription": { "message": "Version 1.0.0 legt die dauerhafte Veröffentlichungs-ID und die freie GPL-Lizenz fest und ergänzt die Lizenzbestätigung in den nativen macOS- und Windows-Installern." }
+  "releaseScopeDescription": { "message": "Version 1.0.1 korrigiert die benutzerbezogene macOS-Registrierung für Native Messaging, damit Thunderbird den lokalen Begleiter starten kann." }
 }

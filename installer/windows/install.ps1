@@ -6,7 +6,7 @@ Installs and registers the versioned native companion for the current user.
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
-    [string]$Version = '1.0.0',
+    [string]$Version = '1.0.1',
 
     [string]$ArtifactDirectory = ''
 )

@@ -76,7 +76,7 @@ describe("extension locales", () => {
     const setupPath = path.resolve(import.meta.dirname, "..", "..", "installer", "windows", "setup.iss");
     const setup = await readFile(setupPath, "utf-8");
 
-    expect(defaults).toEqual({ language: "auto", version: "1.0.0" });
+    expect(defaults).toEqual({ language: "auto", version: "1.0.1" });
     expect(setup).toContain("ShowLanguageDialog=yes");
     expect(setup).toContain("Languages: german");
     expect(setup).toContain("Languages: english");

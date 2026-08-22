@@ -12,22 +12,24 @@ HKCU\Software\Mozilla\NativeMessagingHosts\de.sokrates1989.thunderbird_pdf_archi
 The manifest `path` must point to `thunderbird-pdf-archiver-host.exe`, and
 `allowed_extensions` must contain
 `thunderbird-pdf@felicitas-wisdom.com`. Extension and host must both be
-version `1.0.0`; an older companion is intentionally incompatible.
+version `1.0.1`; an older companion is intentionally incompatible.
 
 For the recommended installation, rerun
-`Thunderbird-PDF-Archiver-Setup-1.0.0-win-x64.exe`. It repairs the profile XPI,
+`Thunderbird-PDF-Archiver-Setup-1.0.1-win-x64.exe`. It repairs the profile XPI,
 both 32-/64-bit native-host registrations, and the installed manifest together.
 
 On macOS, rerun the package matching the Mac architecture and verify this file
 exists for the current user:
 
 ```text
-~/Library/Application Support/Mozilla/NativeMessagingHosts/de.sokrates1989.thunderbird_pdf_archiver.json
+~/Library/Mozilla/NativeMessagingHosts/de.sokrates1989.thunderbird_pdf_archiver.json
 ```
 
 Its `path` must be absolute and point to the executable below
 `~/Library/Application Support/Thunderbird PDF Archiver`. Restart Thunderbird
-after repairing the installation.
+after repairing the installation. Version 1.0.1 and newer also remove the
+incorrect prerelease registration below
+`~/Library/Application Support/Mozilla/NativeMessagingHosts`.
 
 ## Setup cannot close Thunderbird
 

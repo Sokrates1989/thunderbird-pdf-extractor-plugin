@@ -19,7 +19,7 @@ function installStorage(stored: Record<string, unknown>): ReturnType<typeof vi.f
         getUILanguage: () => "en-US",
       },
       runtime: {
-        getManifest: () => ({ version: "1.0.0" }),
+        getManifest: () => ({ version: "1.0.1" }),
         getURL: (path: string) => `moz-extension://test/${path}`,
       },
       storage: {
@@ -34,7 +34,7 @@ function installStorage(stored: Record<string, unknown>): ReturnType<typeof vi.f
     "fetch",
     vi.fn(() =>
       Promise.resolve(
-        new Response(JSON.stringify({ language: "auto", version: "1.0.0" }), { status: 200 }),
+        new Response(JSON.stringify({ language: "auto", version: "1.0.1" }), { status: 200 }),
       ),
     ),
   );

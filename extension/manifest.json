@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "default_locale": "de",
   "author": "Sokrates1989",
   "homepage_url": "https://github.com/Sokrates1989/thunderbird-pdf-extractor-plugin",

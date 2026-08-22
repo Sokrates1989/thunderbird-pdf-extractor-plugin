@@ -18,7 +18,7 @@ if (!["auto", "de", "en"].includes(language)) {
 const languageSuffix = language === "auto" ? "" : `-${language}`;
 const artifactPath = path.join(
   artifactDirectory,
-  `thunderbird-pdf-archiver-1.0.0${languageSuffix}.xpi`,
+  `thunderbird-pdf-archiver-1.0.1${languageSuffix}.xpi`,
 );
 
 await mkdir(artifactDirectory, { recursive: true });
@@ -40,7 +40,7 @@ await new Promise((resolve, reject) => {
   archive.file(path.join(repositoryRoot, "THIRD_PARTY_NOTICES.md"), {
     name: "THIRD_PARTY_NOTICES.md",
   });
-  archive.append(`${JSON.stringify({ language, version: "1.0.0" }, undefined, 2)}\n`, {
+  archive.append(`${JSON.stringify({ language, version: "1.0.1" }, undefined, 2)}\n`, {
     name: "install-defaults.json",
   });
   void archive.finalize();

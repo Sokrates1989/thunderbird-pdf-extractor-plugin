@@ -80,6 +80,7 @@ export function localizedErrorMessage(error: unknown): string {
   if (error instanceof UserFacingError) {
     const keyByCode: Readonly<Record<string, string>> = {
       host_disconnected: "errorHostDisconnected",
+      native_host_unavailable: "errorNativeHostUnavailable",
       host_timeout: "errorHostTimeout",
       incompatible_host: "errorIncompatibleHost",
       output_directory_missing: "directoryNotConfigured",

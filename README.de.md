@@ -16,11 +16,17 @@ dieses lokalen Arbeitsablaufs.
 
 Stabile Dateinamen zeigen immer auf die aktuelle GitHub-Veröffentlichung. Jede Veröffentlichung behält zusätzlich versionierte Installer, XPI, Quellcode und SHA-256-Prüfsummen als Historie.
 
-## Umfang von Release 1.0.0
+## Umfang von Release 1.0.1
 
-Release 1.0.0 legt die dauerhafte Veröffentlichungs-ID
-`thunderbird-pdf@felicitas-wisdom.com` fest, wechselt zu GPL-3.0-or-later und
-ergänzt die Lizenzbestätigung in den nativen Installern. Die benutzerbezogenen
+Release 1.0.1 korrigiert den benutzerbezogenen macOS-Registrierungspfad für
+Native Messaging, damit Thunderbird den paketierten Begleiter starten kann.
+Eine erneute Installation entfernt außerdem das veraltete Manifest am falschen
+Application-Support-Speicherort und zeigt bei fehlender Registrierung einen
+direkt nutzbaren Lösungshinweis.
+
+Release 1.0.0 legte die dauerhafte Veröffentlichungs-ID
+`thunderbird-pdf@felicitas-wisdom.com` fest, wechselte zu GPL-3.0-or-later und
+ergänzte die Lizenzbestätigung in den nativen Installern. Die benutzerbezogenen
 macOS- und Windows-Pakete, lokalisierte XPI, architekturabhängige Begleiter und
 Mozilla-Native-Messaging-Registrierung bleiben ohne Administratorrechte nutzbar.
 
@@ -70,7 +76,7 @@ E-Mail-Inhalte, Dateinamen, URLs, Anhangsnamen oder lokalen Pfade.
 ## Unter macOS installieren
 
 Lade auf einem Apple-Silicon-Mac
-`Thunderbird-PDF-Archiver-Setup-1.0.0-macos-arm64.pkg` herunter und öffne es. Für
+`Thunderbird-PDF-Archiver-Setup-1.0.1-macos-arm64.pkg` herunter und öffne es. Für
 einen Intel-Mac dient entsprechend das Paket `macos-x86_64`. Der Installer läuft
 ohne Administratorrechte für den aktuellen Benutzer. Er installiert oder
 aktualisiert die XPI mit fester ID in allen vorhandenen Thunderbird-Profilen,
@@ -92,7 +98,7 @@ verlangen.
 
 ## Unter Windows installieren
 
-Lade `Thunderbird-PDF-Archiver-Setup-1.0.0-win-x64.exe` herunter und starte die
+Lade `Thunderbird-PDF-Archiver-Setup-1.0.1-win-x64.exe` herunter und starte die
 Datei. Der benutzerbezogene Installer benötigt keine Administratorrechte. Er
 installiert den nativen Begleiter, registriert ihn für 32- und 64-Bit-Thunderbird
 und installiert oder aktualisiert die XPI in allen vorhandenen Thunderbird-
@@ -110,7 +116,7 @@ Für ein Update wird die neuere Setup-Datei direkt ausgeführt; vorheriges
 Deinstallieren ist nicht nötig. Zum Entfernen dient Windows **Installierte Apps**.
 Bereits erzeugte PDF-Dateien werden nicht gelöscht.
 
-Die nativen 1.0.0-Installer entfernen die private Vorab-ID
+Die nativen 1.0.1-Installer entfernen die private Vorab-ID
 `thunderbird-pdf-archiver@sokrates1989.de`, bevor sie die dauerhafte
 Veröffentlichungs-ID installieren. Bei manueller XPI-Installation muss die
 Vorabversion einmalig selbst deinstalliert werden.
@@ -129,7 +135,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\test-set
 ```
 
 Der Build erzeugt die primäre Installationsdatei unter
-`artifacts\Thunderbird-PDF-Archiver-Setup-1.0.0-win-x64.exe`. Der isolierte
+`artifacts\Thunderbird-PDF-Archiver-Setup-1.0.1-win-x64.exe`. Der isolierte
 Setup-Test verwendet ausschließlich eigene LocalAppData- und Registry-Ziele und
 entfernt sie anschließend wieder. Ein echtes Thunderbird-Profil wird nicht
 berührt.
@@ -138,11 +144,11 @@ Der ältere PowerShell-Installer und die einzelne XPI bleiben für die technisch
 Fehlersuche erhalten, sind aber nicht mehr der empfohlene Installationsweg.
 
 Setup installiert ohne Administratorrechte unter
-`%LOCALAPPDATA%\ThunderbirdPdfArchiver\1.0.0`. LibreOffice ist nur für die
+`%LOCALAPPDATA%\ThunderbirdPdfArchiver\1.0.1`. LibreOffice ist nur für die
 Office-/ODF-Konvertierung erforderlich.
 
 Der Build erzeugt zusätzlich
-`artifacts\thunderbird-pdf-archiver-1.0.0-windows.zip`. Nach dem Entpacken kann
+`artifacts\thunderbird-pdf-archiver-1.0.1-windows.zip`. Nach dem Entpacken kann
 ein Windows-Benutzer `installer\windows\install.ps1` ausführen und die enthaltene
 XPI installieren; Node.js, Python und Administratorrechte werden nicht benötigt.
 
@@ -156,7 +162,7 @@ Mit Node.js 20.18+ und Python 3.12 auf der Zielarchitektur:
 ```
 
 Der Build erzeugt
-`artifacts/Thunderbird-PDF-Archiver-Setup-1.0.0-macos-<architektur>.pkg` und prüft
+`artifacts/Thunderbird-PDF-Archiver-Setup-1.0.1-macos-<architektur>.pkg` und prüft
 XPI, nativen Begleiter, Paketdomäne, Native-Messaging-Manifest sowie Installation
 und Update in Wegwerfprofilen. Apple-Silicon- und Intel-Pakete werden auf der
 jeweiligen Architektur gebaut.

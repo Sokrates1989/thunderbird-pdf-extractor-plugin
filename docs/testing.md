@@ -1,4 +1,4 @@
-# Testing release 1.0.0
+# Testing release 1.0.1
 
 ## Automated gates
 
@@ -53,11 +53,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\install.
 powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\uninstall.ps1 -WhatIf
 ```
 
-The version command must print `1.0.0`. The isolated setup test must complete an
+The version command must print `1.0.1`. The isolated setup test must complete an
 install, existing-profile update, registry check, and uninstall without touching
 real Thunderbird state. Inspect
-`artifacts\thunderbird-pdf-archiver-1.0.0-windows.zip` and confirm it contains the
-one-click setup, 1.0.0 XPI, native executable, legacy install/uninstall scripts,
+`artifacts\thunderbird-pdf-archiver-1.0.1-windows.zip` and confirm it contains the
+one-click setup, 1.0.1 XPI, native executable, legacy install/uninstall scripts,
 notices, and Slice 3 operator documents. Parse every PowerShell script and
 compile both release and test-mode Inno Setup sources before release. See the
 [Windows installer test](windows-installer-testing.md) for the manual gate.
@@ -85,7 +85,7 @@ Test separately on Thunderbird 128 ESR, the current ESR, and current release:
    settings, switch to the other language and confirm the settings page, archive
    popup, context menu, progress, success, and error messages all change without
    untranslated fallback text.
-2. Build/install the matching `1.0.0` extension and companion artifacts and
+2. Build/install the matching `1.0.1` extension and companion artifacts and
    restart Thunderbird.
 3. Choose a new empty folder with **Durchsuchen …** and run diagnostics. Confirm
    matching component versions, standalone Windows runtime, available audit log,
