@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-Unregisters and removes the current user's Thunderbird PDF Archiver companion.
+Unregisters and removes the current user's PDF Archiver for Thunderbird companion.
 #>
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param()
@@ -35,7 +35,7 @@ try {
         $removed = $true
     }
     if ($removed) {
-        Write-Host 'Thunderbird PDF Archiver native companion was removed for the current user.'
+        Write-Host 'PDF Archiver for Thunderbird native companion was removed for the current user.'
     }
     else {
         Write-Host 'No uninstall changes were made.'

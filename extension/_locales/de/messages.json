@@ -1,5 +1,5 @@
 {
-  "extensionName": { "message": "Thunderbird PDF Archiver" },
+  "extensionName": { "message": "PDF Archiver for Thunderbird" },
   "extensionDescription": { "message": "Archiviert eine geöffnete E-Mail und ausgewählte Anhänge lokal als eine durchsuchbare PDF-Datei." },
   "actionTitle": { "message": "Als PDF archivieren" },
   "openSettings": { "message": "Einstellungen öffnen" },
@@ -44,8 +44,11 @@
   "progressSaving": { "message": "PDF wird sicher gespeichert …" },
   "progressGeneric": { "message": "Archivierung läuft …" },
   "progressWithDetail": { "message": "$1 — $2" },
-  "settingsTitle": { "message": "Thunderbird PDF Archiver – Einstellungen" },
+  "settingsTitle": { "message": "PDF Archiver for Thunderbird – Einstellungen" },
   "settingsIntroduction": { "message": "Speichert den lesbaren E-Mail-Inhalt und ausgewählte unterstützte Anhänge als eine lokale PDF." },
+  "companionHeading": { "message": "Lokaler Begleiter erforderlich" },
+  "companionDescription": { "message": "Die Installation über Thunderbird Add-ons enthält nur die Erweiterung. Installieren Sie den aktuellen Windows- oder macOS-Begleiter, bevor Sie einen Zielordner wählen oder eine PDF speichern." },
+  "downloadCompanion": { "message": "Lokalen Begleiter herunterladen" },
   "languageLabel": { "message": "Sprache" },
   "languageGerman": { "message": "Deutsch" },
   "languageEnglish": { "message": "Englisch" },
@@ -97,5 +100,5 @@
   "technicalErrorWithCode": { "message": "Ein technischer Fehler ist aufgetreten (Code: $1)." },
   "technicalErrorGeneric": { "message": "Ein unerwarteter technischer Fehler ist aufgetreten." },
   "releaseScopeHeading": { "message": "Release-Umfang" },
-  "releaseScopeDescription": { "message": "Version 1.0.1 korrigiert die benutzerbezogene macOS-Registrierung für Native Messaging, damit Thunderbird den lokalen Begleiter starten kann." }
+  "releaseScopeDescription": { "message": "Version 1.1.0 bereitet die Veröffentlichung vor und führt Nutzer von Thunderbird Add-ons zum erforderlichen lokalen Begleiter." }
 }

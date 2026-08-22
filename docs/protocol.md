@@ -1,11 +1,11 @@
 # Native Messaging protocol 1.0
 
-Extension and host component version `1.0.1` must match exactly. Messages are
+Extension and host component version `1.1.0` must match exactly. Messages are
 compact UTF-8 JSON objects framed with Mozilla's four-byte little-endian length
 prefix. Frames are limited to 1 MiB and every message includes
 `protocolVersion: "1.0"`.
 
-## Thunderbird AI Assistant hand-off
+## AI Mail Assistant for Thunderbird hand-off
 
 The independent cross-extension protocol is version `1`. The PDF Archiver
 background accepts `thunderbird-pdf-archiver:ping` and

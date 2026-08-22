@@ -37,15 +37,15 @@ def test_version_cli_reports_artifact_component_version(
 
     main()
 
-    assert capsys.readouterr().out == "1.0.1\n"
+    assert capsys.readouterr().out == "1.1.0\n"
 
 
 def test_matching_component_handshake_is_compatible() -> None:
     """The released extension and host versions explicitly agree."""
-    response = _hello("1.0.1")
+    response = _hello("1.1.0")
 
     assert response["compatible"] is True
-    assert response["hostVersion"] == "1.0.1"
+    assert response["hostVersion"] == "1.1.0"
 
 
 def test_different_component_handshake_is_incompatible() -> None:
@@ -88,7 +88,7 @@ def test_diagnostics_are_structured_and_path_free(tmp_path: Path) -> None:
     assert configured is not None and configured["type"] == "configured"
     assert response is not None and response["type"] == "diagnostics"
     assert response["outputDirectoryStatus"] == "writable"
-    assert response["hostVersion"] == "1.0.1"
+    assert response["hostVersion"] == "1.1.0"
     assert isinstance(response["chromiumAvailable"], bool)
     assert isinstance(response["libreOfficeAvailable"], bool)
     assert response["platform"] in {"macos", "other", "windows"}

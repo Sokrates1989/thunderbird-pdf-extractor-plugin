@@ -1,5 +1,5 @@
 /**
- * Defines the versioned cross-extension boundary used by Thunderbird AI Assistant.
+ * Defines the versioned cross-extension boundary used by AI Mail Assistant for Thunderbird.
  * Only the explicitly trusted companion extension may open the PDF review window.
  */
 

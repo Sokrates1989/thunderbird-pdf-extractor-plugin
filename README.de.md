@@ -1,4 +1,4 @@
-# Thunderbird PDF Archiver
+# PDF Archiver for Thunderbird
 
 Diese Thunderbird-128+-Erweiterung speichert genau eine bewusst ausgewählte
 E-Mail und ausgewählte unterstützte Anhänge als eine durchsuchbare PDF-Datei in
@@ -16,7 +16,18 @@ dieses lokalen Arbeitsablaufs.
 
 Stabile Dateinamen zeigen immer auf die aktuelle GitHub-Veröffentlichung. Jede Veröffentlichung behält zusätzlich versionierte Installer, XPI, Quellcode und SHA-256-Prüfsummen als Historie.
 
-## Umfang von Release 1.0.1
+## Umfang von Release 1.1.0
+
+Release 1.1.0 bereitet das Add-on für die Veröffentlichung bei Thunderbird
+Add-ons vor. Der öffentliche Name folgt der Thunderbird-Markenrichtlinie, die
+Einstellungen führen Store-Installationen zum zusätzlich erforderlichen lokalen
+Begleiter und die Reviewer-Dokumentation enthält direkt nutzbare deutsche und
+englische Texte zu Listing, Datenschutz, Berechtigungen, Quellcode-Build und
+Funktionstest.
+
+Thunderbird Add-ons verteilt nur die XPI. Windows- und macOS-Nutzer müssen
+zusätzlich den passenden Begleiter aus der aktuellen GitHub-Veröffentlichung
+installieren, bevor ein Zielordner gewählt oder eine PDF gespeichert wird.
 
 Release 1.0.1 korrigiert den benutzerbezogenen macOS-Registrierungspfad für
 Native Messaging, damit Thunderbird den paketierten Begleiter starten kann.
@@ -36,7 +47,7 @@ Prüfmeldungen und Fehler stehen vollständig auf Deutsch und Englisch zur
 Verfügung. Der Windows-Installer fragt nach der anfänglichen Sprache; später
 kann sie jederzeit in den Add-on-Einstellungen geändert werden.
 
-Thunderbird AI Assistant 3.0.0 und neuer kann eine ausdrücklich ausgewählte
+AI Mail Assistant for Thunderbird 3.0.0 und neuer kann eine ausdrücklich ausgewählte
 Dashboard-Mail über eine versionierte Extension-übergreifende Anfrage an dieses
 Add-on übergeben. Nur die feste Extension-ID des AI Assistants wird akzeptiert.
 Die Anfrage öffnet den normalen Prüfdialog dieses Add-ons; Thunderbird AI
@@ -76,7 +87,7 @@ E-Mail-Inhalte, Dateinamen, URLs, Anhangsnamen oder lokalen Pfade.
 ## Unter macOS installieren
 
 Lade auf einem Apple-Silicon-Mac
-`Thunderbird-PDF-Archiver-Setup-1.0.1-macos-arm64.pkg` herunter und öffne es. Für
+`Thunderbird-PDF-Archiver-Setup-1.1.0-macos-arm64.pkg` herunter und öffne es. Für
 einen Intel-Mac dient entsprechend das Paket `macos-x86_64`. Der Installer läuft
 ohne Administratorrechte für den aktuellen Benutzer. Er installiert oder
 aktualisiert die XPI mit fester ID in allen vorhandenen Thunderbird-Profilen,
@@ -98,7 +109,7 @@ verlangen.
 
 ## Unter Windows installieren
 
-Lade `Thunderbird-PDF-Archiver-Setup-1.0.1-win-x64.exe` herunter und starte die
+Lade `Thunderbird-PDF-Archiver-Setup-1.1.0-win-x64.exe` herunter und starte die
 Datei. Der benutzerbezogene Installer benötigt keine Administratorrechte. Er
 installiert den nativen Begleiter, registriert ihn für 32- und 64-Bit-Thunderbird
 und installiert oder aktualisiert die XPI in allen vorhandenen Thunderbird-
@@ -116,7 +127,7 @@ Für ein Update wird die neuere Setup-Datei direkt ausgeführt; vorheriges
 Deinstallieren ist nicht nötig. Zum Entfernen dient Windows **Installierte Apps**.
 Bereits erzeugte PDF-Dateien werden nicht gelöscht.
 
-Die nativen 1.0.1-Installer entfernen die private Vorab-ID
+Die nativen 1.1.0-Installer entfernen die private Vorab-ID
 `thunderbird-pdf-archiver@sokrates1989.de`, bevor sie die dauerhafte
 Veröffentlichungs-ID installieren. Bei manueller XPI-Installation muss die
 Vorabversion einmalig selbst deinstalliert werden.
@@ -135,7 +146,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\windows\test-set
 ```
 
 Der Build erzeugt die primäre Installationsdatei unter
-`artifacts\Thunderbird-PDF-Archiver-Setup-1.0.1-win-x64.exe`. Der isolierte
+`artifacts\Thunderbird-PDF-Archiver-Setup-1.1.0-win-x64.exe`. Der isolierte
 Setup-Test verwendet ausschließlich eigene LocalAppData- und Registry-Ziele und
 entfernt sie anschließend wieder. Ein echtes Thunderbird-Profil wird nicht
 berührt.
@@ -144,11 +155,11 @@ Der ältere PowerShell-Installer und die einzelne XPI bleiben für die technisch
 Fehlersuche erhalten, sind aber nicht mehr der empfohlene Installationsweg.
 
 Setup installiert ohne Administratorrechte unter
-`%LOCALAPPDATA%\ThunderbirdPdfArchiver\1.0.1`. LibreOffice ist nur für die
+`%LOCALAPPDATA%\ThunderbirdPdfArchiver\1.1.0`. LibreOffice ist nur für die
 Office-/ODF-Konvertierung erforderlich.
 
 Der Build erzeugt zusätzlich
-`artifacts\thunderbird-pdf-archiver-1.0.1-windows.zip`. Nach dem Entpacken kann
+`artifacts\thunderbird-pdf-archiver-1.1.0-windows.zip`. Nach dem Entpacken kann
 ein Windows-Benutzer `installer\windows\install.ps1` ausführen und die enthaltene
 XPI installieren; Node.js, Python und Administratorrechte werden nicht benötigt.
 
@@ -162,10 +173,22 @@ Mit Node.js 20.18+ und Python 3.12 auf der Zielarchitektur:
 ```
 
 Der Build erzeugt
-`artifacts/Thunderbird-PDF-Archiver-Setup-1.0.1-macos-<architektur>.pkg` und prüft
+`artifacts/Thunderbird-PDF-Archiver-Setup-1.1.0-macos-<architektur>.pkg` und prüft
 XPI, nativen Begleiter, Paketdomäne, Native-Messaging-Manifest sowie Installation
 und Update in Wegwerfprofilen. Apple-Silicon- und Intel-Pakete werden auf der
 jeweiligen Architektur gebaut.
+
+Das Reviewer-Quellpaket für Thunderbird Add-ons wird ausschließlich aus von Git
+erfassten Dateien gebaut:
+
+```bash
+./scripts/build-atn-source.sh
+```
+
+Die exakte Reviewer-Buildanleitung steht in
+[ATN_SOURCE_BUILD.md](ATN_SOURCE_BUILD.md); Listing, Berechtigungen, Datenschutz
+und Funktionstest stehen im
+[Thunderbird-Add-ons-Einreichungsblatt](docs/atn-submission.md).
 
 ## Update von einer älteren Slice-Version
 
@@ -196,4 +219,4 @@ Erzeugte PDF-Dateien werden bei der Deinstallation nicht gelöscht.
 
 ## Lizenz und Beiträge
 
-Thunderbird PDF Archiver ist freie Open-Source-Software unter der [GNU General Public License Version 3 oder neuer](LICENSE). Forks und Änderungen sind willkommen; Beiträge als [Pull Request](CONTRIBUTING.md) werden besonders ermutigt. Vor Veröffentlichung oder Sicherheitsmeldungen gelten die [Datenschutzerklärung](PRIVACY.md) und [Security Policy](SECURITY.md).
+PDF Archiver for Thunderbird ist freie Open-Source-Software unter der [GNU General Public License Version 3 oder neuer](LICENSE). Forks und Änderungen sind willkommen; Beiträge als [Pull Request](CONTRIBUTING.md) werden besonders ermutigt. Vor Veröffentlichung oder Sicherheitsmeldungen gelten die [Datenschutzerklärung](PRIVACY.md), das [Thunderbird-Add-ons-Einreichungsblatt](docs/atn-submission.md) und die [Security Policy](SECURITY.md).

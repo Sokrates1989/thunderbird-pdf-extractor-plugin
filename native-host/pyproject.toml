@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "thunderbird-pdf-archiver-host"
-version = "1.0.1"
+version = "1.1.0"
 description = "Local Native Messaging companion for searchable Thunderbird email and attachment PDFs."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"

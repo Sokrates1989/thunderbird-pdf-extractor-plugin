@@ -6,7 +6,7 @@ Compiles the per-user Windows setup from verified extension and native-host arti
 [CmdletBinding()]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
-    [string]$Version = '1.0.1',
+    [string]$Version = '1.1.0',
 
     [switch]$TestMode
 )

@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for improving Thunderbird PDF Archiver. Fork the repository, create a focused branch, and open a pull request against `main`. Discuss broad features, protocol changes, and compatibility-breaking work in a GitHub Issue first.
+Thank you for improving PDF Archiver for Thunderbird. Fork the repository, create a focused branch, and open a pull request against `main`. Discuss broad features, protocol changes, and compatibility-breaking work in a GitHub Issue first.
 
 ## Development checks
 

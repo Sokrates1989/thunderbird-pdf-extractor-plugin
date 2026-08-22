@@ -1,10 +1,10 @@
 ; Builds the per-user Windows setup around the already verified XPI and native-host artifacts.
 
 #ifndef AppVersion
-  #define AppVersion "1.0.1"
+  #define AppVersion "1.1.0"
 #endif
 
-#define AppName "Thunderbird PDF Archiver"
+#define AppName "PDF Archiver for Thunderbird"
 #define AppPublisher "Sokrates1989"
 #define AppUrl "https://github.com/Sokrates1989/thunderbird-pdf-extractor-plugin"
 #define ExtensionId "thunderbird-pdf@felicitas-wisdom.com"

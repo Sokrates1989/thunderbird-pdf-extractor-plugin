@@ -7,7 +7,7 @@ const MENU_ID = "archive-message-as-pdf";
 
 function reportBackgroundError(error: unknown): void {
   const detail = error instanceof Error ? error.message : String(error);
-  console.error(`Thunderbird PDF Archiver background error: ${detail}`);
+  console.error(`PDF Archiver for Thunderbird background error: ${detail}`);
 }
 
 async function installMenu(): Promise<void> {

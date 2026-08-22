@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="2">
-    <title>Thunderbird PDF Archiver</title>
+    <title>PDF Archiver for Thunderbird</title>
     <options customize="never" require-scripts="true"/>
     <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="false"/>
     <welcome file="welcome.html" mime-type="text/html"/>

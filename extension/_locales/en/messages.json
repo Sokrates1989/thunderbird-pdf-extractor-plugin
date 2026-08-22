@@ -1,5 +1,5 @@
 {
-  "extensionName": { "message": "Thunderbird PDF Archiver" },
+  "extensionName": { "message": "PDF Archiver for Thunderbird" },
   "extensionDescription": { "message": "Archives an open email and selected attachments locally as one searchable PDF file." },
   "actionTitle": { "message": "Archive as PDF" },
   "openSettings": { "message": "Open settings" },
@@ -44,8 +44,11 @@
   "progressSaving": { "message": "Saving PDF safely …" },
   "progressGeneric": { "message": "Archiving …" },
   "progressWithDetail": { "message": "$1 — $2" },
-  "settingsTitle": { "message": "Thunderbird PDF Archiver settings" },
+  "settingsTitle": { "message": "PDF Archiver for Thunderbird settings" },
   "settingsIntroduction": { "message": "Saves readable email content and selected supported attachments as one local PDF." },
+  "companionHeading": { "message": "Local companion required" },
+  "companionDescription": { "message": "The Thunderbird Add-ons installation provides the extension only. Install the current Windows or macOS companion before choosing an output folder or saving a PDF." },
+  "downloadCompanion": { "message": "Download the local companion" },
   "languageLabel": { "message": "Language" },
   "languageGerman": { "message": "German" },
   "languageEnglish": { "message": "English" },
@@ -97,5 +100,5 @@
   "technicalErrorWithCode": { "message": "A technical error occurred (code: $1)." },
   "technicalErrorGeneric": { "message": "An unexpected technical error occurred." },
   "releaseScopeHeading": { "message": "Release scope" },
-  "releaseScopeDescription": { "message": "Version 1.0.1 repairs the per-user macOS Native Messaging registration so Thunderbird can start the local companion." }
+  "releaseScopeDescription": { "message": "Version 1.1.0 prepares the add-on for publication and guides Thunderbird Add-ons users to the required local companion." }
 }

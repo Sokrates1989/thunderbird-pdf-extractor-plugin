@@ -8,7 +8,7 @@ import {
 
 const trustedSender = { id: AI_ASSISTANT_EXTENSION_ID };
 
-describe("Thunderbird AI Assistant integration", () => {
+describe("AI Mail Assistant for Thunderbird integration", () => {
   it("does not expose the integration to untrusted extensions", async () => {
     const openReview = vi.fn(() => Promise.resolve());
 

@@ -116,7 +116,7 @@ node -e '
 const fs = require("node:fs");
 const manifest = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
 if (manifest.name !== "de.sokrates1989.thunderbird_pdf_archiver" ||
-    manifest.description !== "Thunderbird PDF Archiver native companion" ||
+    manifest.description !== "PDF Archiver for Thunderbird native companion" ||
     manifest.path !== process.argv[2] || manifest.type !== "stdio" ||
     JSON.stringify(manifest.allowed_extensions) !==
         JSON.stringify(["thunderbird-pdf@felicitas-wisdom.com"])) {
@@ -212,4 +212,4 @@ if printf '%s\n' "${domain_information}" | grep -F 'LocalSystem' >/dev/null; the
     exit 1
 fi
 
-printf 'Isolated Thunderbird PDF Archiver macOS install/update and package verification: PASS\n'
+printf 'Isolated PDF Archiver for Thunderbird macOS install/update and package verification: PASS\n'

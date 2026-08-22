@@ -22,7 +22,7 @@ legacy_manifest_path="${legacy_manifest_directory}/${NATIVE_HOST_NAME}.json"
 
 for required_path in "${xpi_path}" "${host_path}" "${version_path}"; do
     if [[ ! -f "${required_path}" ]]; then
-        printf 'Thunderbird PDF Archiver payload is missing: %s\n' "${required_path}" >&2
+        printf 'PDF Archiver for Thunderbird payload is missing: %s\n' "${required_path}" >&2
         exit 1
     fi
 done
@@ -67,7 +67,7 @@ trap cleanup EXIT
 /usr/bin/plutil -create xml1 "${temporary_plist}"
 /usr/bin/plutil -insert name -string "${NATIVE_HOST_NAME}" "${temporary_plist}"
 /usr/bin/plutil -insert description -string \
-    'Thunderbird PDF Archiver native companion' "${temporary_plist}"
+    'PDF Archiver for Thunderbird native companion' "${temporary_plist}"
 /usr/bin/plutil -insert path -string "${host_path}" "${temporary_plist}"
 /usr/bin/plutil -insert type -string 'stdio' "${temporary_plist}"
 /usr/bin/plutil -insert allowed_extensions -json \
@@ -86,5 +86,5 @@ for profile_directory in "${profile_directories[@]}"; do
     install -m 0644 -- "${xpi_path}" "${destination_path}"
 done
 
-printf 'Installed Thunderbird PDF Archiver into %d profile(s).\n' \
+printf 'Installed PDF Archiver for Thunderbird into %d profile(s).\n' \
     "${#profile_directories[@]}"

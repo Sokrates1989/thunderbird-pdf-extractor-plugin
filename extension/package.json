@@ -1,6 +1,6 @@
 {
   "name": "thunderbird-pdf-extractor-extension",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "license": "GPL-3.0-or-later",
   "private": true,
   "type": "module",

@@ -67,6 +67,23 @@ describe("extension locales", () => {
     }
   });
 
+  it("links store installations to the official companion release page", async () => {
+    const optionsPath = path.resolve(
+      import.meta.dirname,
+      "..",
+      "pages",
+      "options",
+      "options.html",
+    );
+    const options = await readFile(optionsPath, "utf-8");
+
+    expect(options).toContain(
+      'href="https://github.com/Sokrates1989/thunderbird-pdf-extractor-plugin/releases/latest"',
+    );
+    expect(options).toContain('rel="noopener noreferrer"');
+    expect(options).toContain('data-i18n="downloadCompanion"');
+  });
+
   it("ships an automatic manual-install default and language-specific setup packages", async () => {
     const defaultsPath = path.resolve(import.meta.dirname, "..", "install-defaults.json");
     const defaults = JSON.parse(await readFile(defaultsPath, "utf-8")) as {
@@ -76,7 +93,7 @@ describe("extension locales", () => {
     const setupPath = path.resolve(import.meta.dirname, "..", "..", "installer", "windows", "setup.iss");
     const setup = await readFile(setupPath, "utf-8");
 
-    expect(defaults).toEqual({ language: "auto", version: "1.0.1" });
+    expect(defaults).toEqual({ language: "auto", version: "1.1.0" });
     expect(setup).toContain("ShowLanguageDialog=yes");
     expect(setup).toContain("Languages: german");
     expect(setup).toContain("Languages: english");
